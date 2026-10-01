@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" style=""><head></head><body class="selection:bg-oxblood selection:text-manila-card font-serif antialiased min-h-screen relative pb-28"><svg aria-hidden="true" class="inline-defs-container" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<!DOCTYPE html><html lang="en" style=""><head></head><body data-archive-loading="true" class="selection:bg-oxblood selection:text-manila-card font-serif antialiased min-h-screen relative pb-28"><svg aria-hidden="true" class="inline-defs-container" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>FOR THE RECORD, REZA — Private Pressing &amp; Unwrapping Ceremony</title>
@@ -46,8 +46,19 @@
         repeating-linear-gradient(0deg, rgba(70,50,30,0.018) 0px, rgba(70,50,30,0.018) 1px, transparent 1px, transparent 4px);
       overflow-x: hidden;
     }
+    body[data-archive-loading="true"] #side-a,
+    body[data-archive-loading="true"] #scrapbook,
+    body[data-archive-loading="true"] #vinyl-shelf-scroll,
+    body[data-archive-loading="true"] #track-archive-slips,
+    body[data-archive-loading="true"] #letter-front,
+    body[data-archive-loading="true"] aside.fixed.bottom-0 {
+      visibility: hidden;
+    }
     .paper-edge-shadow {
       box-shadow: 0 4px 18px -2px rgba(45, 32, 22, 0.18), 0 1px 4px rgba(45, 32, 22, 0.1);
+    }
+    .scrapbook-state-content {
+      transition: opacity 0.45s ease;
     }
     .deep-vinyl-shadow {
       box-shadow: 0 18px 40px -8px rgba(20, 10, 8, 0.48), 0 6px 18px rgba(0, 0, 0, 0.25);
@@ -506,7 +517,7 @@
 <span class="text-[9px] text-ink-faint" id="hero-card-status">VOL. 1 • SEALED</span>
 </div>
 <p class="font-script text-base sm:text-lg text-ink-dim leading-snug italic my-1" id="hero-card-tagline">the people who know her</p>
-<div class="font-mono text-[9px] text-ink-faint tracking-wider uppercase pt-1" id="hero-card-meta">• 7 TRACKS • 12 PHOTOGRAPHS</div>
+<div class="font-mono text-[9px] text-ink-faint tracking-wider uppercase pt-1" id="hero-card-meta">ARCHIVE DATA LOADING</div>
 </div>
 <!-- Bottom Right Action Button & Rewrap Reset -->
 <div class="absolute -bottom-6 sm:-bottom-8 right-4 sm:right-10 z-30 flex items-center gap-2">
@@ -969,6 +980,11 @@
     activeSong: null
   };
 
+  ['side-a', 'side-b', 'dossier-modal', 'scrapbook', 'track-infinity'].forEach(id => {
+    const section = document.getElementById(id);
+    if (section) section.classList.add('hidden');
+  });
+
   function normalizeText(value) {
     return String(value ?? '').replace(/\uFEFF/g, '').trim();
   }
@@ -984,14 +1000,16 @@
       .filter(Boolean);
   }
 
-  function normalizeDriveUrl(rawUrl) {
+  function normalizePhotoUrl(rawUrl) {
     const value = normalizeText(rawUrl);
     if (!value) return '';
+    if (/^\/api\/google-drive-photo\?id=[a-z0-9_-]+$/i.test(value)) return value;
     if (/^https?:\/\//.test(value) && /\.(jpe?g|png|gif|webp|avif|bmp|svg)(\?.*)?$/i.test(value)) return value;
+    if (/^https:\/\/(lh3\.googleusercontent\.com|photos\.google\.com)\//i.test(value)) return value;
     if (/drive\.google\.com/i.test(value)) {
       const idMatch = value.match(/[?&]id=([^&]+)/i) || value.match(/\/d\/([^/]+)/i) || value.match(/id=([^&]+)/i);
       if (idMatch && idMatch[1]) {
-        return `https://drive.google.com/uc?export=view&id=${decodeURIComponent(idMatch[1])}`;
+        return `/api/google-drive-photo?id=${encodeURIComponent(decodeURIComponent(idMatch[1]))}`;
       }
     }
     return '';
@@ -1041,8 +1059,9 @@
   }
 
   function pickValue(record, names) {
+    const normalizeHeader = value => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
     for (const name of names) {
-      const match = Object.keys(record).find(key => key.toLowerCase() === name.toLowerCase());
+      const match = Object.keys(record).find(key => normalizeHeader(key) === normalizeHeader(name));
       if (match) return record[match];
     }
     return '';
@@ -1056,28 +1075,28 @@
 
   function normalizeContributor(raw, index) {
     const row = raw || {};
-    const name = sentenceCase(pickValue(row, ['Name', 'name', 'Contributor Name'])) || `Contributor ${index + 1}`;
-    const nickname = sentenceCase(pickValue(row, ['Nickname', 'nickname', 'Nick name'])) || '';
-    const relationship = sentenceCase(pickValue(row, ['Relationship', 'relationship', 'How they know Reza'])) || '';
-    const howLongKnown = sentenceCase(pickValue(row, ['How long known', 'How Long Known', 'howLongKnown', 'How long have you known Reza'])) || '';
-    const friendshipName = sentenceCase(pickValue(row, ['Friendship in 3 words', 'Friendship in 3 Words', 'friendshipIn3Words', 'Friendship'])) || '';
-    const photoStory = sentenceCase(pickValue(row, ['Photo Story', 'photoStory', 'Photos story'])) || '';
-    const memory = sentenceCase(pickValue(row, ['Memory', 'memory'])) || '';
-    const story = sentenceCase(pickValue(row, ['Story', 'story'])) || '';
-    const birthdayMessage = sentenceCase(pickValue(row, ['Birthday message', 'Birthday Message', 'birthdayMessage'])) || '';
-    const mostLikelyTo = sentenceCase(pickValue(row, ['Most likely to', 'mostLikelyTo'])) || '';
-    const oneThingOnly = sentenceCase(pickValue(row, ['One thing only Reza does', 'One Thing Only Reza Does', 'oneThingOnlyRezaDoes'])) || '';
-    const remembered = sentenceCase(pickValue(row, ['Something about Reza they probably don\'t realize you remember', 'Something about Reza they probably don’t realize you remember', 'somethingAboutReza'])) || '';
-    const anythingElse = sentenceCase(pickValue(row, ['Anything else', 'Anything Else', 'anythingElse'])) || '';
+    const name = sentenceCase(pickValue(row, ['Name', 'Your name', 'Contributor Name']));
+    const nickname = sentenceCase(pickValue(row, ['Nickname', 'What does Reza call you?']));
+    const relationship = sentenceCase(pickValue(row, ['Relationship', 'How do you know Reza?']));
+    const howLongKnown = sentenceCase(pickValue(row, ['How long known', 'How long have you known Reza?']));
+    const friendshipName = sentenceCase(pickValue(row, ['Friendship in 3 words', 'Describe your friendship with Reza in 3 words.']));
+    const photoStory = sentenceCase(pickValue(row, ['Photo Story', 'What\'s the story behind the photo?']));
+    const memory = sentenceCase(pickValue(row, ['Memory', 'What\'s one memory with Reza that you hope she never forgets?']));
+    const story = sentenceCase(pickValue(row, ['Story', 'Tell the story.']));
+    const birthdayMessage = sentenceCase(pickValue(row, ['Birthday message', 'Write something you\'d want Reza to read on her birthday.']));
+    const mostLikelyTo = sentenceCase(pickValue(row, ['Most likely to', 'Reza is most likely to...']));
+    const oneThingOnly = sentenceCase(pickValue(row, ['One thing only Reza does']));
+    const remembered = sentenceCase(pickValue(row, ['Something about Reza they probably don\'t realize you remember', 'What\'s something about Reza that she probably doesn\'t realize you remember?']));
+    const anythingElse = sentenceCase(pickValue(row, ['Anything else', 'Anything else you want to add?']));
 
-    const spotifyOne = normalizeText(pickValue(row, ['Spotify link', 'spotifyUrl', 'Spotify Link', 'Song 1 Spotify'])) || '';
-    const spotifyTwo = normalizeText(pickValue(row, ['Song 2 Spotify', 'song2Spotify'])) || '';
-    const spotifyThree = normalizeText(pickValue(row, ['Song 3 Spotify', 'song3Spotify'])) || '';
-    const spotifyFour = normalizeText(pickValue(row, ['Song 4 Spotify', 'song4Spotify'])) || '';
-    const whySongOne = sentenceCase(pickValue(row, ['Why song', 'Why Song', 'Why This Song', 'whySong'])) || '';
-    const whySongTwo = sentenceCase(pickValue(row, ['Why Song 2', 'whySong2'])) || '';
-    const whySongThree = sentenceCase(pickValue(row, ['Why Song 3', 'whySong3'])) || '';
-    const whySongFour = sentenceCase(pickValue(row, ['Why Song 4', 'whySong4'])) || '';
+    const spotifyOne = normalizeText(pickValue(row, ['Spotify link', 'Song 1 Spotify'])) || '';
+    const spotifyTwo = normalizeText(pickValue(row, ['Song 2 Spotify', 'Song 2 — Spotify link'])) || '';
+    const spotifyThree = normalizeText(pickValue(row, ['Song 3 Spotify', 'Song 3 — Spotify link'])) || '';
+    const spotifyFour = normalizeText(pickValue(row, ['Song 4 Spotify', 'Song 4 — Spotify link'])) || '';
+    const whySongOne = sentenceCase(pickValue(row, ['Why song', 'Why this song?'])) || '';
+    const whySongTwo = sentenceCase(pickValue(row, ['Why Song 2', 'Why this song? 2'])) || '';
+    const whySongThree = sentenceCase(pickValue(row, ['Why Song 3', 'Why this song? 3'])) || '';
+    const whySongFour = sentenceCase(pickValue(row, ['Why Song 4', 'Why this song? 4'])) || '';
 
     const songList = [
       { spotifyUrl: spotifyOne, whyThisSong: whySongOne },
@@ -1089,12 +1108,20 @@
       whyThisSong: sentenceCase(song.whyThisSong),
       trackNumber: idx + 1,
       contributorName: name
-    })).filter(song => song.spotifyUrl || song.whyThisSong);
+    })).filter(song => song.spotifyUrl);
 
-    const rawPhotoValue = pickValue(row, ['Photos', 'photos', 'Photo', 'Image', 'Uploaded Photos']);
-    const photoLinks = splitValues(rawPhotoValue)
-      .map(normalizeDriveUrl)
-      .filter(Boolean);
+    const photoEntries = Object.entries(row)
+      .filter(([header]) => /^photo\s*\d+/i.test(header) || /^(photos?|image|uploaded photos)$/i.test(header.trim()) || /^📸\s*upload your photos/i.test(header.trim()))
+      .flatMap(([header, value]) => normalizeText(value).split(/[\n;,]+/).map(url => ({ header, url: normalizePhotoUrl(url) })))
+      .filter(photo => photo.url);
+    const selectedCover = normalizeText(pickValue(row, ['Which photo should be the main album cover?']));
+    const selectedCoverIndex = Number((selectedCover.match(/\d+/) || [])[0]) - 1;
+    if (selectedCoverIndex >= 0) {
+      photoEntries.sort((a, b) => Number(/^photo\s*(\d+)/i.exec(a.header)?.[1] || 0) - Number(/^photo\s*(\d+)/i.exec(b.header)?.[1] || 0));
+      const coverIndex = photoEntries.findIndex(photo => Number(/^photo\s*(\d+)/i.exec(photo.header)?.[1] || 0) === selectedCoverIndex + 1);
+      if (coverIndex >= 0) photoEntries.unshift(photoEntries.splice(coverIndex, 1)[0]);
+    }
+    const photoLinks = photoEntries.map(photo => photo.url).filter((photo, photoIndex, allPhotos) => allPhotos.indexOf(photo) === photoIndex);
 
     return {
       id: `RZ-${String(index + 1).padStart(3, '0')}`,
@@ -1115,18 +1142,12 @@
       anythingElse,
       folderTab: `RZ-${String(index + 1).padStart(3, '0')} // ARCHIVE DOSSIER`,
       catalogStamp: `RZ-${String(index + 1).padStart(3, '0')} • FOLIO`,
-      plateRef: `PLATE ${String((index % 5) + 1)} • NEG. ${(index + 1) * 7}`
+      plateRef: photoLinks.length ? `${photoLinks.length} PHOTOGRAPH${photoLinks.length === 1 ? '' : 'S'} FILED` : ''
     };
   }
 
   function loadSeedData() {
-    return Object.entries(fallbackContributors).map(([id, contributor]) => ({
-      ...contributor,
-      id,
-      nickname: normalizeText(contributor.nickname || ''),
-      photos: Array.isArray(contributor.photos) ? contributor.photos.filter(Boolean) : [],
-      songs: Array.isArray(contributor.songs) ? contributor.songs : []
-    }));
+    return [];
   }
 
   const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vScFQTa69dQ0I_tsgRxULCYWoqhsKTsEu-rrbR6uMUYANsbpY49gRUqoTKEXSAzzq4hVEihBVjEJHFe/pub?output=csv';
@@ -1160,42 +1181,66 @@
       const rows = parseCsv(csvText);
       if (!rows.length) throw new Error('No CSV rows found');
       const headers = rows[0].map(header => normalizeText(header));
-      const contributorRows = rows.slice(1).filter(row => row.some(cell => normalizeText(cell) !== ''));
-      if (!contributorRows.length) throw new Error('CSV has no contributor rows');
-      state.contributors = contributorRows.map((row, index) => {
+      const contributorRows = rows.slice(1).map(row => {
         const raw = {};
         headers.forEach((header, columnIndex) => {
           raw[header] = row[columnIndex] ?? '';
         });
-        return normalizeContributor(raw, index);
+        return raw;
+      }).filter(raw => {
+        const name = normalizeText(pickValue(raw, ['Name', 'Your name', 'Contributor Name']));
+        return name.replace(/[^\p{L}\p{N}]/gu, '').length >= 2;
       });
+      if (!contributorRows.length) throw new Error('CSV has no named contributor rows');
+      state.contributors = contributorRows.map((row, index) => normalizeContributor(row, index));
       if (!state.contributors.length) throw new Error('Contributor list empty');
       console.info('Loaded Google Sheet data', state.contributors.length);
       window.__archiveState = { source: 'google-sheet', contributorCount: state.contributors.length };
     } catch (error) {
-      console.warn('Google Sheet unavailable, falling back to local archive seed:', error);
-      state.contributors = loadSeedData();
-      window.__archiveState = { source: 'fallback', contributorCount: state.contributors.length };
+      console.warn('Google Sheet unavailable:', error);
+      state.contributors = [];
+      window.__archiveState = { source: 'error', contributorCount: 0, error: error.message };
     }
 
     renderContributorCards();
     renderTrackSlips();
     renderTrackInfinityMessages();
+    renderScrapbook();
+    renderArchiveMetadata();
+    if (state.contributors[0]) applyDossierFields(state.contributors[0]);
+    document.body.removeAttribute('data-archive-loading');
+    document.body.classList.add('archive-data-loaded');
+    ['side-a', 'side-b', 'scrapbook', 'track-infinity'].forEach(id => {
+      const section = document.getElementById(id);
+      if (section) section.classList.remove('hidden');
+    });
     bindStaticDocumentEvents();
     ensureFallbackModal();
   }
 
   function renderContributorCards() {
     const shelf = document.getElementById('vinyl-shelf-scroll');
-    if (!shelf || !state.contributors.length) return;
+    if (!shelf) return;
+    let records = shelf.querySelector('[data-contributor-records]');
+    if (!records) {
+      shelf.replaceChildren();
+      records = document.createElement('div');
+      records.dataset.contributorRecords = '';
+      records.className = 'flex items-end gap-10 min-w-max px-4 sm:px-8 pb-4 relative z-10';
+      shelf.appendChild(records);
+    }
+    if (!state.contributors.length) {
+      records.innerHTML = '<p class="font-mono text-[10px] uppercase tracking-widest text-[#7F695A]">ARCHIVE RECORDS UNAVAILABLE</p>';
+      return;
+    }
 
-    shelf.innerHTML = state.contributors.map((contributor, index) => {
+    records.innerHTML = state.contributors.map((contributor, index) => {
       const coverType = index % 2 === 0 ? 'rotate-[-0.8deg]' : 'rotate-[0.7deg]';
       const accent = index % 2 === 0 ? 'bg-[#F3E7D1]' : 'bg-[#E9DCC0]';
-      const displayNickname = contributor.nickname ? `“${escapeHtml(contributor.nickname)}”` : 'anonymous archive';
+      const displayNickname = contributor.nickname ? `“${escapeHtml(contributor.nickname)}”` : '';
       const rotatedText = index % 2 === 0 ? '-rotate-1' : 'rotate-1';
       return `
-        <div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer ${coverType} shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="${escapeHtml(contributor.id)}">
+        <div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer ${coverType} shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="${escapeHtml(contributor.id)}" data-contributor-id="${escapeHtml(contributor.id)}">
           <div class="absolute inset-0 rounded-[2px] border border-[#C5B59E] ${accent} paper-edge-shadow overflow-hidden">
             <div class="absolute -right-6 top-4 w-24 h-24 rounded-full vinyl-grooves border border-[#4A382F] shadow-inner opacity-75"></div>
             <div class="absolute inset-4 border border-dashed border-[#A58B5A]/50"
@@ -1207,8 +1252,8 @@
             <div class="absolute inset-x-5 top-10 bottom-10 flex flex-col justify-center text-center">
               <div class="font-mono text-[8px] uppercase tracking-[0.32em] text-oxblood mt-2">SIDE B</div>
               <h3 class="font-serif text-3xl sm:text-[2rem] text-ink-black leading-none tracking-tight mt-2 ${rotatedText}">${escapeHtml(contributor.name.split(' ')[0] || contributor.name)}</h3>
-              <div class="font-script text-xl text-oxblood mt-2">${displayNickname}</div>
-              <p class="font-mono text-[8px] uppercase tracking-[0.22em] text-[#7F695A] mt-3">${escapeHtml(contributor.relationship || contributor.howLongKnown || 'private archive')}</p>
+              ${displayNickname ? `<div class="font-script text-xl text-oxblood mt-2">${displayNickname}</div>` : ''}
+              ${(contributor.relationship || contributor.howLongKnown) ? `<p class="font-mono text-[8px] uppercase tracking-[0.22em] text-[#7F695A] mt-3">${escapeHtml(contributor.relationship || contributor.howLongKnown)}</p>` : ''}
             </div>
             <div class="absolute bottom-3 left-3 right-3 h-px bg-[#A58B5A]/70"></div>
           </div>
@@ -1221,12 +1266,14 @@
     const container = document.getElementById('track-archive-slips');
     if (!container) return;
 
+    container.replaceChildren();
+
     const tracks = state.contributors.flatMap((contributor) =>
       (contributor.songs || []).map((song, songIndex) => ({
         contributor,
         song,
         trackNumber: contributor.songs.length > 1 ? songIndex + 1 : 1,
-        title: normalizeText(song.spotifyUrl || `Track ${songIndex + 1}`),
+        title: `Track ${String(song.trackNumber || songIndex + 1).padStart(2, '0')}`,
         artist: contributor.name,
         note: normalizeText(song.whyThisSong || ''),
         hand: `${contributor.name} • ${contributor.relationship || 'archive contribution'}`
@@ -1239,16 +1286,16 @@
     }
 
     container.innerHTML = tracks.map((entry, index) => {
-      const title = entry.song.whyThisSong || entry.song.spotifyUrl || 'Untitled cut';
+      const title = `Track ${String(index + 1).padStart(2, '0')}`;
       const label = `CUT ${String(index + 1).padStart(2, '0')}`;
       return `
-        <div class="track-slip cursor-pointer p-3 sm:p-3.5 border-l-4 border-l-oxblood border-y border-r border-[#D8C9B0] paper-edge-shadow bg-manila-card hover:bg-[#FAF3E4] transition-all duration-200" data-track="${escapeHtml(title)}" data-artist="${escapeHtml(entry.artist)}" data-tracknum="${String(index + 1).padStart(2, '0')}" data-note="${escapeHtml(entry.note)}" data-hand="${escapeHtml(entry.hand)}">
+        <div class="track-slip cursor-pointer p-3 sm:p-3.5 border-l-4 border-l-oxblood border-y border-r border-[#D8C9B0] paper-edge-shadow bg-manila-card hover:bg-[#FAF3E4] transition-all duration-200" data-track="${escapeHtml(title)}" data-spotify-url="${escapeHtml(entry.song.spotifyUrl)}" data-artist="${escapeHtml(entry.artist)}" data-tracknum="${String(index + 1).padStart(2, '0')}" data-note="${escapeHtml(entry.note)}" data-hand="${escapeHtml(entry.hand)}">
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-start gap-3 min-w-0">
               <span class="font-mono text-[9px] uppercase tracking-[0.22em] text-oxblood font-bold min-w-[42px] mt-0.5">${label}</span>
               <div class="min-w-0">
                 <h3 class="font-serif text-lg sm:text-xl text-ink-black leading-tight tracking-[-0.02em] truncate">${escapeHtml(entry.artist)}</h3>
-                <p class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#796A5D] mt-0.5">${escapeHtml(entry.song.whyThisSong || 'Archive pick')}</p>
+                <p class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#796A5D] mt-0.5">${escapeHtml(title)}</p>
               </div>
             </div>
             <span class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#7E685C] whitespace-nowrap">${String(index + 1).padStart(2, '0')}</span>
@@ -1305,32 +1352,59 @@
 
     if (tabEl) tabEl.textContent = data.folderTab || 'ARCHIVE DOSSIER';
     if (catEl) catEl.textContent = data.catalogStamp || 'FOLIO';
-    if (nameEl) nameEl.textContent = data.name || 'Unnamed contributor';
-    if (nickEl) nickEl.textContent = data.nickname ? `“${data.nickname}”` : '—';
-    if (relEl) relEl.textContent = data.relationship || 'Private connection';
-    if (tenEl) tenEl.textContent = data.howLongKnown || 'Shared time';
+    if (nameEl) nameEl.textContent = data.name;
+    if (nickEl) {
+      nickEl.textContent = data.nickname ? `“${data.nickname}”` : '';
+      nickEl.parentElement.hidden = !data.nickname;
+    }
+    if (relEl) {
+      relEl.textContent = data.relationship;
+      relEl.parentElement.parentElement.hidden = !data.relationship;
+    }
+    if (tenEl) {
+      tenEl.textContent = data.howLongKnown;
+      tenEl.parentElement.parentElement.hidden = !data.howLongKnown;
+    }
     if (wordsWrap) {
-      const words = (data.friendshipIn3Words || '').split(/\s+/).filter(Boolean).slice(0, 3);
-      wordsWrap.innerHTML = words.length ? words.map(word => `<span class="px-2 py-0.5 border border-[#C5B59E] bg-[#FAF5EB] text-[8.5px] font-mono tracking-wider font-bold shadow-xs text-oxblood">[${escapeHtml(word.toUpperCase())}]</span>`).join('') : '<span class="px-2 py-0.5 border border-[#C5B59E] bg-[#FAF5EB] text-[8.5px] font-mono tracking-wider font-bold shadow-xs text-oxblood">[ARCHIVE]</span>';
+      const words = (data.friendshipIn3Words || '').split(/[\s,]+/).filter(Boolean).slice(0, 3);
+      wordsWrap.innerHTML = words.map(word => `<span class="px-2 py-0.5 border border-[#C5B59E] bg-[#FAF5EB] text-[8.5px] font-mono tracking-wider font-bold shadow-xs text-oxblood">[${escapeHtml(word.toUpperCase())}]</span>`).join('');
+      wordsWrap.parentElement.hidden = !words.length;
     }
 
     const photos = (data.photos || []).filter(Boolean);
-    if (plateEl) plateEl.textContent = photos.length ? `PLATE ${Math.min(photos.length, 5)} • NEG. ${String((photos.length || 1) * 7)}` : 'NO PHOTOS FILED';
-    if (priPhoto) priPhoto.src = photos[0] || 'https://images.unsplash.com/photo-1517841905240-472988c247ac?auto=format&fit=crop&w=1200&q=80';
-    if (priCap) priCap.textContent = data.photoStory || '“Moments preserved in quiet corners.”';
-    if (secPhoto) secPhoto.src = photos[1] || 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80';
-    if (secCap) secCap.textContent = data.photoStory || '“A second frame from the same archive.”';
+    const gallery = document.getElementById('modal-photos-gallery');
+    const photoStoryContainer = document.getElementById('modal-photostory-container');
+    const photoStoryText = document.getElementById('modal-photostory-text');
+    const photoSection = document.getElementById('dossier-photo-section');
+    if (plateEl) plateEl.textContent = photos.length ? `${photos.length} PHOTOGRAPH${photos.length === 1 ? '' : 'S'} FILED` : 'NO PHOTOGRAPHS FILED';
+    if (photoSection) photoSection.hidden = photos.length === 0 && !data.photoStory;
+    if (photoStoryText) photoStoryText.textContent = data.photoStory;
+    if (photoStoryContainer) photoStoryContainer.hidden = !data.photoStory;
+    if (gallery) {
+      gallery.className = `grid gap-5 ${photos.length > 1 ? 'sm:grid-cols-2' : 'grid-cols-1'}`;
+      gallery.innerHTML = photos.length ? photos.map((photo, index) => `
+        <figure class="bg-[#FFFDF8] p-3.5 pb-5 border border-[#DFCDB2] paper-edge-shadow relative ${index % 2 ? 'rotate-1' : '-rotate-1'}">
+          <div class="tape-strip absolute -top-3 left-8 w-20 h-5 -rotate-2 pointer-events-none"></div>
+          <img alt="Submitted archive photograph ${index + 1}" class="block max-w-full max-h-[520px] w-auto h-auto mx-auto filter sepia brightness-95" src="${escapeHtml(photo)}">
+        </figure>`).join('') : (data.photoStory ? `<p class="font-script text-base text-ink-black text-center leading-snug">${escapeHtml(data.photoStory)}</p>` : '');
+      gallery.querySelectorAll('img').forEach(image => image.addEventListener('error', () => {
+        image.closest('figure')?.remove();
+        if (!gallery.querySelector('img') && !data.photoStory) {
+          gallery.innerHTML = '<p class="font-mono text-[9px] uppercase tracking-widest text-ink-faint">PHOTOGRAPHS NOT ACCESSIBLE</p>';
+        }
+      }, { once: true }));
+    }
 
     const moodSongs = (data.songs || []).map((song, idx) => ({
       cut: `CUT ${String(idx + 1).padStart(2, '0')}`,
-      track: (song && song.spotifyUrl) ? song.spotifyUrl.split('/').pop() || `Track ${idx + 1}` : `Track ${idx + 1}`,
-      movie: song && song.whyThisSong ? song.whyThisSong : 'ARCHIVE PICK',
+      track: `Track ${String(idx + 1).padStart(2, '0')}`,
+      movie: song && song.whyThisSong ? song.whyThisSong : 'NO NOTE ATTACHED TO THIS CUT.',
       time: '—',
       sideTrack: `SIDE A • TRACK ${String(idx + 1).padStart(2, '0')}`
     }));
 
     if (stHead) stHead.textContent = data.soundtrackHeader || 'THEIR SOUNDTRACK // THE REZA EP';
-    if (stCount) stCount.textContent = `${moodSongs.length || 1} CUTS SUBMITTED`;
+    if (stCount) stCount.textContent = `${moodSongs.length} CUTS SUBMITTED`;
     if (trWrap) {
       trWrap.innerHTML = moodSongs.length ? moodSongs.map(item => `
         <div class="p-3.5 bg-[#FAF5EB] border border-[#D8C9B0] paper-edge-shadow flex items-center justify-between gap-3 hover:bg-[#F2E5CE] transition-colors">
@@ -1351,23 +1425,36 @@
       `).join('') : '<div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#7E685C]">No tracks filed yet.</div>';
     }
 
-    if (whyHand) whyHand.textContent = data.whyHand || 'in their own hand';
-    if (whyText) whyText.textContent = data.whyText || 'No note attached.';
-    if (dispRef) dispRef.textContent = data.dispatchRef || 'DISPATCH REF: UNFILED';
-    if (memText) memText.textContent = data.memory || 'No memory recorded.';
-    if (memLoc) memLoc.textContent = data.memoryLoc || 'Location: private archive';
-    if (storyWrap) storyWrap.innerHTML = `<p>${escapeHtml(data.story || 'No story submitted.')}</p>`;
-    if (scL) scL.textContent = data.mostLikelyTo || 'No note archived.';
-    if (scO) scO.textContent = data.oneThingOnlyRezaDoes || 'No note archived.';
-    if (scR) scR.textContent = data.somethingAboutReza || 'No note archived.';
-    if (scOt) scOt.textContent = data.anythingElse || 'No note archived.';
-    if (msgText) msgText.textContent = data.birthdayMessage || 'Happy Birthday, Reza.';
-    if (postLoc) postLoc.textContent = data.postmark || 'POSTMARKED: PRIVATE ARCHIVE';
-    if (sigLine) sigLine.textContent = data.signature || '— With love';
+    if (whyHand) whyHand.textContent = `in ${data.name}'s hand`;
+    if (whyText) whyText.textContent = data.songs.find(song => song.whyThisSong)?.whyThisSong || 'NO NOTE ATTACHED TO THIS CUT.';
+    const whySection = document.getElementById('dossier-why-song-section');
+    if (whySection) whySection.hidden = !data.songs.length;
+    if (dispRef) dispRef.textContent = data.memory ? `${data.name} • FILED MEMORY` : '';
+    if (memText) memText.textContent = data.memory;
+    if (memLoc) memLoc.textContent = '';
+    const memorySection = document.getElementById('dossier-memory-section');
+    if (memorySection) memorySection.hidden = !data.memory;
+    if (storyWrap) storyWrap.innerHTML = data.story ? `<p>${escapeHtml(data.story)}</p>` : '';
+    const storySection = document.getElementById('dossier-story-section');
+    if (storySection) storySection.hidden = !data.story;
+    [[scL, data.mostLikelyTo], [scO, data.oneThingOnlyRezaDoes], [scR, data.somethingAboutReza], [scOt, data.anythingElse]].forEach(([element, value]) => {
+      if (element) {
+        element.textContent = value;
+        element.parentElement.hidden = !value;
+      }
+    });
+    const scrapsSection = document.getElementById('dossier-scraps-section');
+    if (scrapsSection) scrapsSection.hidden = ![data.mostLikelyTo, data.oneThingOnlyRezaDoes, data.somethingAboutReza, data.anythingElse].some(Boolean);
+    if (msgText) msgText.textContent = data.birthdayMessage;
+    const letterSection = document.getElementById('dossier-letter-section');
+    if (letterSection) letterSection.hidden = !data.birthdayMessage;
+    if (postLoc) postLoc.textContent = '';
+    if (sigLine) sigLine.textContent = '';
   }
 
   function showIdentityCheck(contributor) {
     const modalCard = document.getElementById('dossier-card');
+    const modal = document.getElementById('dossier-modal');
     if (!modalCard) return;
 
     let overlay = document.getElementById('archive-identity-check');
@@ -1436,7 +1523,7 @@
   }
 
   function openDossierFor(id) {
-    const contributor = state.contributors.find(item => item.id === id) || state.contributors[0];
+    const contributor = state.contributors.find(item => item.id === id);
     if (!contributor) return;
 
     const modal = document.getElementById('dossier-modal');
@@ -1461,66 +1548,329 @@
   }
 
   function bindStaticDocumentEvents() {
-    document.querySelectorAll('.contributor-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const id = card.getAttribute('data-id');
-        if (id) openDossierFor(id);
+    const shelf = document.getElementById('vinyl-shelf-scroll');
+    let pointer = null;
+    let suppressClick = false;
+    const movementThreshold = 8;
+    if (shelf && !shelf.dataset.archiveInteractionBound) {
+      shelf.dataset.archiveInteractionBound = 'true';
+
+      shelf.addEventListener('pointerdown', event => {
+        if (event.button !== 0 || !event.target.closest('.contributor-card')) return;
+        pointer = {
+          id: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          scrollLeft: shelf.scrollLeft,
+          dragging: false,
+          pointerType: event.pointerType
+        };
       });
-    });
 
-    document.querySelectorAll('.track-slip').forEach(slip => {
-      slip.addEventListener('click', () => {
-        const trackTitle = slip.getAttribute('data-track') || 'Untitled cut';
-        const artist = slip.getAttribute('data-artist') || 'Archive pick';
-        const num = slip.getAttribute('data-tracknum') || '01';
-        const quoteEl = document.getElementById('sidea-panel-quote');
-        const handEl = document.getElementById('sidea-panel-hand');
-        const refEl = document.getElementById('sidea-panel-cutref');
-
-        if (quoteEl) {
-          quoteEl.textContent = `“${slip.getAttribute('data-note') || 'A note from the archive.'}”`;
+      window.addEventListener('pointermove', event => {
+        if (!pointer || pointer.id !== event.pointerId) return;
+        const dx = event.clientX - pointer.x;
+        const dy = event.clientY - pointer.y;
+        if (!pointer.dragging && Math.hypot(dx, dy) >= movementThreshold) {
+          pointer.dragging = true;
+          suppressClick = true;
+          shelf.classList.add('cursor-grabbing');
         }
-        if (handEl) handEl.textContent = slip.getAttribute('data-hand') || 'Archive annotation';
-        if (refEl) refEl.textContent = `CUT: A • ${num} — ${trackTitle.toUpperCase()}`;
+        if (pointer.dragging && pointer.pointerType === 'mouse') {
+          shelf.scrollLeft = pointer.scrollLeft - dx;
+          event.preventDefault();
+        }
+      });
 
-        const activeSongName = document.getElementById('active-song-name');
-        const activeArtistName = document.getElementById('active-artist-name');
-        const barSongTitle = document.getElementById('bar-song-title');
-        if (activeSongName) activeSongName.textContent = trackTitle;
-        if (activeArtistName) activeArtistName.textContent = artist;
-        if (barSongTitle) barSongTitle.textContent = `${trackTitle} — ${artist}`;
-
-        document.querySelectorAll('.track-slip').forEach(item => item.classList.remove('bg-[#FAF3E4]', 'border-oxblood'));
-        slip.classList.add('bg-[#FAF3E4]', 'border-oxblood');
+      const finishPointer = event => {
+        if (!pointer || pointer.id !== event.pointerId) return;
+        if (pointer.dragging) {
+          suppressClick = true;
+          setTimeout(() => { suppressClick = false; }, 500);
+        }
+        pointer = null;
+        shelf.classList.remove('cursor-grabbing');
+      };
+      window.addEventListener('pointerup', finishPointer);
+      window.addEventListener('pointercancel', finishPointer);
+      shelf.addEventListener('wheel', event => {
+        if (shelf.scrollWidth <= shelf.clientWidth) return;
+        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+          shelf.scrollLeft += event.deltaY;
+          event.preventDefault();
+        }
+      }, { passive: false });
+    }
+    if (shelf) shelf.querySelectorAll('.contributor-card').forEach(card => {
+      if (card.dataset.dossierBound) return;
+      card.dataset.dossierBound = 'true';
+      card.addEventListener('click', event => {
+        if (suppressClick) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          suppressClick = false;
+          return;
+        }
+        const id = card.dataset.contributorId;
+        const contributor = state.contributors.find(item => item.id === id);
+        if (window.__archiveDebug) {
+          console.debug('[ARCHIVE CLICK]', { recordId: id, resolvedContributor: contributor?.name || null });
+        }
+        if (contributor) openDossierFor(id);
       });
     });
+
+    document.querySelectorAll('.track-slip').forEach(slip => slip.addEventListener('click', () => selectTrack(slip, slip)));
+  }
+
+  function selectTrack(trackEntry, element) {
+    const trackTitle = trackEntry.getAttribute('data-track') || 'Track';
+    const artist = trackEntry.getAttribute('data-artist') || '';
+    const num = trackEntry.getAttribute('data-tracknum') || '01';
+    const note = trackEntry.getAttribute('data-note') || '';
+    const quoteEl = document.getElementById('sidea-panel-quote');
+    const handEl = document.getElementById('sidea-panel-hand');
+    const refEl = document.getElementById('sidea-panel-cutref');
+    if (quoteEl) quoteEl.textContent = note || 'NO NOTE ATTACHED TO THIS CUT.';
+    if (handEl) handEl.textContent = artist ? `in ${artist}'s hand` : '';
+    if (refEl) refEl.textContent = `CUT: A • ${num} — ${trackTitle.toUpperCase()}`;
+    document.querySelectorAll('.track-slip').forEach(item => item.classList.remove('bg-[#FAF3E4]', 'border-oxblood'));
+    if (element) element.classList.add('bg-[#FAF3E4]', 'border-oxblood');
+    document.dispatchEvent(new CustomEvent('archive-track-selected', { detail: { trackTitle, artist, num } }));
   }
 
   function renderTrackInfinityMessages() {
     const messages = state.contributors
-      .map(item => normalizeText(item.birthdayMessage))
-      .filter(Boolean);
+      .map(item => ({ name: item.name, message: normalizeText(item.birthdayMessage) }))
+      .filter(item => item.message);
 
     const front = document.getElementById('letter-front');
     if (front) {
-      const paragraphs = front.querySelectorAll('p');
-      if (paragraphs.length > 0) {
-        paragraphs[0].textContent = messages.length ? `“${messages[0]}”` : '“Happy Birthday, Reza.”';
+      const content = front.querySelector('.space-y-3\\.5');
+      if (content) {
+        if (!messages.length) {
+          content.innerHTML = '<p class="font-mono text-xs uppercase tracking-widest text-ink-faint">NO MESSAGES FILED</p>';
+        } else {
+          const showMessage = index => {
+            const item = messages[index % messages.length];
+            const excerpt = item.message.length > 180 ? `${item.message.slice(0, 177).trimEnd()}...` : item.message;
+            content.innerHTML = `<p class="font-serif italic text-xl sm:text-2xl text-ink-black leading-snug">${escapeHtml(excerpt)}</p><p class="font-mono text-[8px] uppercase tracking-widest text-ink-faint">${escapeHtml(item.name)}</p><p class="font-mono text-[8px] uppercase tracking-widest text-ink-faint">${index + 1} / ${messages.length}</p>`;
+          };
+          showMessage(0);
+          if (front.messageRotation) clearInterval(front.messageRotation);
+          front.messageRotation = setInterval(() => {
+            const next = (Number(front.dataset.messageIndex || 0) + 1) % messages.length;
+            front.dataset.messageIndex = String(next);
+            showMessage(next);
+          }, 5000);
+        }
       }
-    }
-
-    const back = document.getElementById('letter-back');
-    if (back) {
-      const paragraphs = back.querySelectorAll('p');
-      if (paragraphs.length > 0) {
-        paragraphs[0].textContent = messages.length > 1 ? `“${messages.slice(0, 2).join(' • ')}”` : '“For all the quiet hours in between the songs, the late tea on the kitchen counter, and every unscripted Tuesday. Thank you for letting me share this life with you. Happy Birthday, my love.”';
-      }
+      const contributorRoster = front.querySelector('.font-script.text-xl');
+      if (contributorRoster) contributorRoster.textContent = 'in several hands';
     }
 
     const finalLine = document.querySelector('#track-infinity p.font-serif.text-2xl');
     if (finalLine) {
-      finalLine.textContent = messages.length ? 'Happy Birthday, Reza.' : 'Happy Birthday, Reza.';
+      finalLine.textContent = messages.length ? `${messages.length} MESSAGE${messages.length === 1 ? '' : 'S'} FILED` : 'NO MESSAGES FILED';
     }
+  }
+
+  function renderArchiveMetadata() {
+    const songCount = state.contributors.reduce((total, contributor) => total + contributor.songs.length, 0);
+    const photoCount = state.contributors.reduce((total, contributor) => total + contributor.photos.length, 0);
+    const metadata = document.getElementById('hero-card-meta');
+    if (metadata) metadata.textContent = window.__archiveState?.source === 'error'
+      ? 'ARCHIVE UNAVAILABLE • CHECK CONNECTION'
+      : `• ${songCount} TRACKS • ${photoCount} PHOTOGRAPHS`;
+    document.querySelectorAll('#side-a .font-mono').forEach(label => {
+      if (label.textContent.includes('MASTER TRACK ARCHIVE')) {
+        label.textContent = `MASTER TRACK ARCHIVE • ${songCount} RECORDINGS`;
+      }
+    });
+    document.querySelectorAll('aside.fixed.bottom-0 span').forEach(label => {
+      if (/^RZ-\d{3} • 33⅓ MONO$/.test(label.textContent.trim())) {
+        label.textContent = `RZ-FOLIO • ${state.contributors.length} CONTRIBUTORS`;
+      }
+    });
+    if (!songCount) {
+      const activeTitle = document.getElementById('active-song-name');
+      const activeArtist = document.getElementById('active-artist-name');
+      const barTitle = document.getElementById('bar-song-title');
+      const quote = document.getElementById('sidea-panel-quote');
+      const hand = document.getElementById('sidea-panel-hand');
+      if (activeTitle) activeTitle.textContent = 'NO TRACK SELECTED';
+      if (activeArtist) activeArtist.textContent = '';
+      if (barTitle) barTitle.textContent = 'NO TRACKS FILED';
+      if (quote) quote.textContent = 'NO NOTE ATTACHED TO THIS CUT.';
+      if (hand) hand.textContent = '';
+    }
+    const quote = document.getElementById('sidea-panel-quote');
+    const hand = document.getElementById('sidea-panel-hand');
+    const cutRef = document.getElementById('sidea-panel-cutref');
+    const title = document.getElementById('active-song-name');
+    const artist = document.getElementById('active-artist-name');
+    const barTitle = document.getElementById('bar-song-title');
+    const needleTrack = document.getElementById('needle-track-indicator');
+    const turntableSelection = document.querySelector('#side-a .cut-selection-label');
+    if (quote) quote.textContent = 'SELECT A CUT TO READ ITS SUBMITTED NOTE.';
+    if (hand) hand.textContent = '';
+    if (cutRef) cutRef.textContent = 'NO CUT SELECTED';
+    if (title) title.textContent = 'NO CUT SELECTED';
+    if (artist) artist.textContent = '';
+    if (barTitle) barTitle.textContent = songCount ? 'SELECT A CUT FROM SIDE A' : 'NO TRACKS FILED';
+    if (needleTrack) needleTrack.textContent = 'NO CUT SELECTED';
+    if (turntableSelection) turntableSelection.textContent = 'NO CUT SELECTED';
+    const deckStatus = document.getElementById('deck-status');
+    const playText = document.getElementById('play-text');
+    const playIcon = document.getElementById('play-icon');
+    const barPlayIcon = document.getElementById('bar-play-icon');
+    const globalNeedleStatus = document.getElementById('global-needle-status');
+    if (deckStatus) deckStatus.textContent = 'READY • PARKED';
+    if (playText) playText.textContent = 'SPIN CUT';
+    if (playIcon) playIcon.textContent = 'play_arrow';
+    if (barPlayIcon) barPlayIcon.textContent = 'play_arrow';
+    if (globalNeedleStatus) globalNeedleStatus.textContent = 'NEEDLE: PARKED';
+    const countLabel = document.querySelector('#side-b [data-contributor-count]');
+    if (countLabel) countLabel.textContent = `${state.contributors.length} CONTRIBUTORS`;
+    document.querySelectorAll('#side-b [data-contributor-range]').forEach(label => {
+      label.textContent = state.contributors.length ? `SHELF POS. 01–${String(state.contributors.length).padStart(2, '0')}` : 'NO RECORDS FILED';
+    });
+    document.querySelectorAll('#side-b .absolute').forEach(label => {
+      if (label.textContent.includes('SHELF POS.')) {
+        label.textContent = `LATHE CUT VERIFIED • ${state.contributors.length ? `SHELF POS. 01–${String(state.contributors.length).padStart(2, '0')}` : 'NO RECORDS FILED'}`;
+      }
+    });
+  }
+
+  function renderScrapbook() {
+    const canvas = document.getElementById('scrapbook-canvas');
+    if (!canvas) return;
+    const grid = canvas.querySelector('.relative.z-10.grid');
+    if (!grid) return;
+    const badge = document.getElementById('scrapbook-category-badge');
+    const states = [];
+    const addState = (key, label, items, quiz = null) => {
+      if (items.some(item => !item.value && !item.photo)) return;
+      states.push({ key, label, items, quiz });
+    };
+    const littleThings = state.contributors.flatMap(contributor => [
+      ['MOST LIKELY TO', contributor.mostLikelyTo],
+      ['ONE THING ONLY REZA DOES', contributor.oneThingOnlyRezaDoes],
+      ['SOMETHING THEY REMEMBER', contributor.somethingAboutReza]
+    ].filter(([, value]) => normalizeText(value)).map(([label, value]) => ({ contributor, label, value })));
+    const shuffle = values => [...values].sort(() => Math.random() - 0.5);
+
+    if (littleThings.length) {
+      const selected = shuffle(littleThings).slice(0, Math.min(3, littleThings.length));
+      addState('little-things', 'THE LITTLE THINGS', selected.map(item => ({ label: item.label, value: item.value, name: item.contributor.name })));
+    }
+    state.contributors.forEach(contributor => {
+      if (contributor.story) addState(`story:${contributor.id}`, 'A STORY WORTH KEEPING', [{ label: 'A STORY WORTH KEEPING', value: contributor.story, name: contributor.name }]);
+      if (contributor.somethingAboutReza) addState(`remembered:${contributor.id}`, 'SOMETHING YOU REMEMBER', [{ label: 'SOMETHING THEY REMEMBER', value: contributor.somethingAboutReza, name: contributor.name }]);
+      if (contributor.anythingElse || contributor.birthdayMessage) {
+        addState(`one-more:${contributor.id}`, 'ONE MORE THING', [{
+          label: contributor.anythingElse ? 'ANYTHING ELSE' : 'A MESSAGE FOR REZA',
+          value: contributor.anythingElse || contributor.birthdayMessage,
+          name: contributor.name
+        }]);
+      }
+      if (contributor.birthdayMessage && state.contributors.length >= 2) {
+        const choices = shuffle(state.contributors.filter(item => item.id !== contributor.id)).slice(0, 2);
+        addState(`who-said:${contributor.id}`, 'WHO SAID THIS?', [{
+          label: 'A MESSAGE FOR REZA',
+          value: contributor.birthdayMessage.length > 180 ? `${contributor.birthdayMessage.slice(0, 177).trimEnd()}...` : contributor.birthdayMessage,
+          name: contributor.name
+        }], { answerId: contributor.id, choices: shuffle([contributor, ...choices]) });
+      }
+    });
+
+    let currentState = null;
+    let rotationTimer = null;
+    let interactionUntil = 0;
+    const previousKey = sessionStorage.getItem('archiveScrapbookState');
+    const chooseState = () => {
+      if (!states.length) return null;
+      const options = states.length > 1 ? states.filter(item => item.key !== currentState?.key && item.key !== previousKey) : states;
+      return (options.length ? options : states)[Math.floor(Math.random() * (options.length || states.length))];
+    };
+    const renderState = nextState => {
+      currentState = nextState;
+      if (!nextState) {
+        grid.innerHTML = '<p class="font-mono text-[10px] uppercase tracking-widest text-ink-faint md:col-span-12">NO EPHEMERA FILED</p>';
+        return;
+      }
+      sessionStorage.setItem('archiveScrapbookState', nextState.key);
+      if (badge) badge.textContent = `ARCHIVAL EPHEMERA • ${nextState.label}`;
+      grid.classList.add('scrapbook-state-content', 'opacity-0');
+      const columns = [[], [], []];
+      nextState.items.forEach((item, index) => columns[index % 3].push({ ...item, index }));
+      const photoMarkup = photo => `<img class="scrapbook-submitted-photo block max-w-full max-h-[280px] w-auto h-auto mx-auto" src="${escapeHtml(photo)}" alt="Submitted photo from ${escapeHtml(nextState.items[0].name || 'contributor')}">`;
+      grid.innerHTML = columns.map(column => `
+        <div class="md:col-span-4 flex flex-col gap-6 items-center">
+          ${column.map(item => `
+            <article class="scrapbook-item relative w-full max-w-[340px] bg-[#FFFDF8] p-4 border border-[#DECDBD] paper-edge-shadow ${item.index % 2 ? 'rotate-1' : '-rotate-1'}" data-scrap-index="${item.index}">
+              <div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>
+              <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-1">${escapeHtml(item.label)}</div>
+              ${item.photo ? photoMarkup(item.photo) : `<p class="font-serif text-sm text-ink-black leading-snug">${escapeHtml(item.value)}</p>`}
+              ${item.name ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2">${escapeHtml(item.name)}</div>` : ''}
+              ${nextState.quiz && item.index === 0 ? `<div class="flex flex-wrap gap-1.5 justify-center mt-3">${nextState.quiz.choices.map(choice => `<button class="scrapbook-answer px-2 py-1 border border-[#BAA68B] bg-[#FAF5EB] font-mono text-[8px] uppercase" data-choice-id="${escapeHtml(choice.id)}">${escapeHtml(choice.name)}</button>`).join('')}</div><p class="scrapbook-feedback hidden font-mono text-[8px] uppercase text-center mt-2"></p>` : ''}
+            </article>`).join('')}
+        </div>`).join('');
+      requestAnimationFrame(() => grid.classList.remove('opacity-0'));
+      grid.querySelectorAll('.scrapbook-submitted-photo').forEach(image => image.addEventListener('error', () => {
+        image.closest('article')?.remove();
+        const failedUrl = new URL(image.getAttribute('src'), location.href).href;
+        if (currentState?.items.some(item => item.photo && new URL(item.photo, location.href).href === failedUrl)) {
+          const stateIndex = states.findIndex(item => item.key === currentState.key);
+          if (stateIndex >= 0) states.splice(stateIndex, 1);
+          currentState = null;
+          renderState(chooseState());
+        }
+      }, { once: true }));
+    };
+
+    const rotate = () => {
+      if (Date.now() < interactionUntil || canvas.matches(':hover') || canvas.contains(document.activeElement)) {
+        rotationTimer = setTimeout(rotate, 2000);
+        return;
+      }
+      const next = chooseState();
+      if (next) renderState(next);
+      rotationTimer = setTimeout(rotate, 60000 + Math.random() * 30000);
+    };
+    renderState(chooseState());
+    if (rotationTimer) clearTimeout(rotationTimer);
+    rotationTimer = setTimeout(rotate, 60000 + Math.random() * 30000);
+    canvas.addEventListener('pointerdown', () => { interactionUntil = Date.now() + 3000; });
+    canvas.addEventListener('focusin', () => { interactionUntil = Date.now() + 3000; });
+    canvas.addEventListener('click', event => {
+      interactionUntil = Date.now() + 3000;
+      const answer = event.target.closest('.scrapbook-answer');
+      if (answer && currentState?.quiz) {
+        const feedback = answer.closest('article')?.querySelector('.scrapbook-feedback');
+        if (feedback) {
+          feedback.textContent = answer.dataset.choiceId === currentState.quiz.answerId ? 'CORRECT' : 'NOT QUITE';
+          feedback.classList.remove('hidden');
+        }
+        return;
+      }
+      const item = event.target.closest('[data-scrap-index]');
+      if (item) item.classList.toggle('rotate-0');
+    });
+
+    state.contributors.forEach(contributor => {
+      if ((!contributor.memory && !contributor.story) || !contributor.photos.length) return;
+      const photo = contributor.photos[0];
+      const image = new Image();
+      image.onload = () => {
+        const storyItem = contributor.memory
+          ? [{ label: 'FROM THE ARCHIVE', value: contributor.memory, name: contributor.name }, { label: 'PHOTOGRAPH', photo, name: contributor.name }]
+          : [{ label: 'A STORY WORTH KEEPING', value: contributor.story, name: contributor.name }, { label: 'PHOTOGRAPH', photo, name: contributor.name }];
+        addState(`photo-story:${contributor.id}`, contributor.memory ? 'PHOTOGRAPH + MEMORY' : 'STORY + PHOTOGRAPH', storyItem);
+      };
+      image.onerror = () => {};
+      image.src = photo;
+    });
   }
 
   loadData();
@@ -1928,14 +2278,14 @@
 </button>
 </div>
 <div class="flex-1 max-w-xl mx-4 flex items-center gap-4">
-<span class="truncate text-gold-light font-bold" id="bar-song-title">Gallan Goodiyan — DIL DHADAKNE DO • 2015</span>
+<span class="truncate text-gold-light font-bold" id="bar-song-title">SELECT A CUT FROM SIDE A</span>
 <div class="flex-1 h-[2px] bg-[#35271F] rounded-full overflow-hidden hidden sm:block">
 <div class="h-full bg-gold w-1/3 transition-all duration-300" id="bar-progress"></div>
 </div>
 </div>
 <div class="flex items-center gap-4 text-parchment/60 text-[10px] uppercase tracking-wider">
 <span class="hidden md:inline text-gold-light/80" id="global-needle-status">NEEDLE: TRACKING 33⅓</span>
-<span class="hidden md:inline">RZ-003 • 33⅓ MONO</span>
+<span class="hidden md:inline">RZ-FOLIO • ARCHIVE PRESSING</span>
 </div>
 </div>
 </aside>
@@ -2128,12 +2478,6 @@
         e.preventDefault();
         onDragStart(e.clientX, e.clientY);
       });
-      // Click fallback for accessibility or quick tap
-      tailRightCord.addEventListener('click', (e) => {
-        if (!isUnwrapped && pullDistance < 5) {
-          performStagedUntyingSequence();
-        }
-      });
       // Touch support
       tailRightCord.addEventListener('touchstart', (e) => {
         if (e.touches && e.touches[0]) {
@@ -2265,7 +2609,7 @@
       if (heroCardBadge) heroCardBadge.textContent = 'PRIVATE EDITION';
       if (heroCardStatus) heroCardStatus.textContent = 'VOL. 1 • SEALED';
       if (heroCardTagline) heroCardTagline.textContent = 'the people who know her';
-      if (heroCardMeta) heroCardMeta.textContent = '• 7 TRACKS • 12 PHOTOGRAPHS';
+      if (heroCardMeta) heroCardMeta.textContent = 'ARCHIVE DATA LOADING';
 
       if (btnOpenArchive) {
         btnOpenArchive.classList.remove('bg-[#FBF0D9]', 'border-[#8C4C50]');
@@ -2280,8 +2624,6 @@
       playChime(220, 0.8, 'sine', 0.1);
     }
 
-    if (parcelTag) parcelTag.addEventListener('click', () => performStagedUntyingSequence(false));
-    if (washiTape) washiTape.addEventListener('click', () => performStagedUntyingSequence(false));
     if (btnOpenArchive) {
       btnOpenArchive.addEventListener('click', () => {
         if (!isUnwrapped) {
@@ -2315,7 +2657,7 @@
     let rotation = 0;
     let spinRaf = null;
 
-    function startPlayback(song = "Channa Mereya", artist = "AE DIL HAI MUSHKIL", num = "01") {
+    function startPlayback(song = "NO TRACK SELECTED", artist = "", num = "01") {
       isPlaying = true;
       playChime(329.63);
       if (activeSongName) activeSongName.textContent = song;
@@ -2371,20 +2713,9 @@
       });
     }
 
-    const slips = document.querySelectorAll('.track-slip');
-    slips.forEach((slip) => {
-      slip.addEventListener('click', () => {
-        const track = slip.getAttribute('data-track');
-        const artist = slip.getAttribute('data-artist');
-        const num = slip.getAttribute('data-tracknum');
-        slips.forEach(s => {
-          s.classList.remove('bg-[#FAF3E4]', 'border-oxblood');
-          s.classList.add('bg-manila-card');
-        });
-        slip.classList.remove('bg-manila-card');
-        slip.classList.add('bg-[#FAF3E4]', 'border-oxblood');
-        startPlayback(track, artist, num);
-      });
+    document.addEventListener('archive-track-selected', (event) => {
+      const { trackTitle, artist, num } = event.detail;
+      startPlayback(trackTitle, artist, num);
     });
 
     // Side B horizontal scroll
@@ -2398,20 +2729,6 @@
     const dossierModal = document.getElementById('dossier-modal');
     const dossierCard = document.getElementById('dossier-card');
     const closeDossierBtn = document.getElementById('close-dossier-btn');
-    const cards = document.querySelectorAll('.contributor-card');
-
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        if (dossierModal && dossierCard) {
-          dossierModal.classList.remove('hidden');
-          dossierModal.classList.add('flex');
-          setTimeout(() => {
-            dossierCard.classList.remove('scale-95', 'opacity-0');
-            dossierCard.classList.add('scale-100', 'opacity-100');
-          }, 20);
-        }
-      });
-    });
 
     function closeDossier() {
       if (dossierModal && dossierCard) {
@@ -2534,15 +2851,6 @@
   }
 })();
 </script>
-<script id="sidea-footnote-sync-script">(function() { const slips = document.querySelectorAll('.track-slip'); const quoteEl = document.getElementById('sidea-panel-quote'); const handEl = document.getElementById('sidea-panel-hand'); const refEl = document.getElementById('sidea-panel-cutref'); slips.forEach(slip => { slip.addEventListener('click', () => { const note = slip.getAttribute('data-note') || ''; const hand = slip.getAttribute('data-hand') || ''; const num = slip.getAttribute('data-tracknum') || ''; const track = slip.getAttribute('data-track') || ''; if (quoteEl) { quoteEl.style.opacity = '0'; setTimeout(() => { quoteEl.textContent = '“' + note + '”'; quoteEl.style.opacity = '1'; }, 150); } if (handEl) handEl.textContent = hand; if (refEl) refEl.textContent = 'CUT: A • ' + num + ' — ' + track.toUpperCase(); }); }); })();</script>
-
-
-
-
-
-
-
-
 
 
 
