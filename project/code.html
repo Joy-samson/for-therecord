@@ -1122,6 +1122,80 @@
         </div>
       `;
     }).join('');
+
+    bindContributorCardInteractions(shelf);
+  }
+
+  function bindContributorCardInteractions(shelf) {
+    const movementThreshold = 9;
+    const pointers = new Map();
+
+    const openContributorCard = card => {
+      const contributorId = card.dataset.contributorId;
+      const contributor = state.contributors.find(item => item.id === contributorId);
+      if (contributor) openDossierFor(contributorId);
+    };
+
+    window.addEventListener('pointermove', event => {
+      const pointer = pointers.get(event.pointerId);
+      if (!pointer) return;
+
+      const dx = event.clientX - pointer.startX;
+      const dy = event.clientY - pointer.startY;
+      if (!pointer.dragging && Math.hypot(dx, dy) > movementThreshold) {
+        pointer.dragging = true;
+        shelf.classList.add('cursor-grabbing');
+      }
+      if (pointer.dragging && pointer.pointerType === 'mouse') {
+        shelf.scrollLeft = pointer.startScrollLeft - dx;
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    shelf.querySelectorAll('.contributor-card').forEach(card => {
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+
+      card.addEventListener('pointerdown', event => {
+        if (event.button !== 0 || !event.isPrimary) return;
+        pointers.set(event.pointerId, {
+          card,
+          startX: event.clientX,
+          startY: event.clientY,
+          startScrollLeft: shelf.scrollLeft,
+          pointerType: event.pointerType,
+          dragging: false
+        });
+        shelf.style.scrollBehavior = 'auto';
+        try {
+          card.setPointerCapture(event.pointerId);
+        } catch (error) {
+          console.warn('Could not capture archive pointer:', error);
+        }
+      });
+
+      card.addEventListener('pointerup', event => {
+        const pointer = pointers.get(event.pointerId);
+        if (!pointer || pointer.card !== card) return;
+        pointers.delete(event.pointerId);
+        shelf.style.scrollBehavior = '';
+        shelf.classList.remove('cursor-grabbing');
+        if (!pointer.dragging) openContributorCard(card);
+      });
+
+      card.addEventListener('pointercancel', event => {
+        if (!pointers.has(event.pointerId)) return;
+        pointers.delete(event.pointerId);
+        shelf.style.scrollBehavior = '';
+        shelf.classList.remove('cursor-grabbing');
+      });
+
+      card.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openContributorCard(card);
+      });
+    });
   }
 
   function renderTrackSlips() {
@@ -1363,7 +1437,7 @@
       if (!compareName) {
         closeGate();
         applyDossierFields(contributor);
-        if (modal) modal.classList.remove('hidden');
+        revealDossierModal(modal);
         return;
       }
       if (typed === compareName) {
@@ -1371,7 +1445,7 @@
         sessionStorage.setItem('archiveUnlockedContributors', JSON.stringify([...state.unlocked]));
         closeGate();
         applyDossierFields(contributor);
-        if (modal) modal.classList.remove('hidden');
+        revealDossierModal(modal);
         return;
       }
       if (message) {
@@ -1400,15 +1474,29 @@
 
     const shouldCheck = !!normalizeText(contributor.nickname || '');
     if (shouldCheck && !state.unlocked.has(contributor.id)) {
+      document.getElementById('archive-identity-check')?.remove();
+      const dossierCard = document.getElementById('dossier-card');
+      dossierCard?.classList.remove('scale-95', 'opacity-0');
+      dossierCard?.classList.add('scale-100', 'opacity-100');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
       showIdentityCheck(contributor);
       return;
     }
 
-    applyDossierFields(contributor);
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    try {
+      applyDossierFields(contributor);
+    } catch (error) {
+      console.error('[ARCHIVE DOSSIER ERROR]', contributor.id, error);
+    }
+    revealDossierModal(modal);
+  }
+
+  function revealDossierModal(modal) {
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
     const dossierCard = document.getElementById('dossier-card');
     if (dossierCard) {
       dossierCard.classList.remove('scale-95', 'opacity-0');
@@ -1418,9 +1506,6 @@
 
   function bindStaticDocumentEvents() {
     const shelf = document.getElementById('vinyl-shelf-scroll');
-    let pointer = null;
-    let suppressNextClick = false;
-    const movementThreshold = 8;
     if (shelf && !shelf.dataset.archiveInteractionBound) {
       shelf.dataset.archiveInteractionBound = 'true';
       const updateShelfFocus = () => {
@@ -1435,68 +1520,6 @@
       shelf.addEventListener('scroll', () => requestAnimationFrame(updateShelfFocus), { passive: true });
       window.addEventListener('resize', updateShelfFocus, { passive: true });
       requestAnimationFrame(updateShelfFocus);
-      shelf.addEventListener('pointerdown', event => {
-        if (event.button !== 0) return;
-        suppressNextClick = false;
-        pointer = {
-          id: event.pointerId,
-          x: event.clientX,
-          y: event.clientY,
-          scrollLeft: shelf.scrollLeft,
-          dragging: false,
-          pointerType: event.pointerType,
-          lastX: event.clientX,
-          lastTime: performance.now(),
-          velocityX: 0
-        };
-        shelf.style.scrollBehavior = 'auto';
-      });
-      window.addEventListener('pointermove', event => {
-        if (!pointer || pointer.id !== event.pointerId) return;
-        const dx = event.clientX - pointer.x;
-        const dy = event.clientY - pointer.y;
-        if (!pointer.dragging && Math.hypot(dx, dy) >= movementThreshold) {
-          pointer.dragging = true;
-          shelf.classList.add('cursor-grabbing');
-        }
-        if (pointer.dragging && pointer.pointerType === 'mouse') {
-          shelf.scrollLeft = pointer.scrollLeft - dx;
-          const now = performance.now();
-          const elapsed = Math.max(1, now - pointer.lastTime);
-          pointer.velocityX = (event.clientX - pointer.lastX) / elapsed;
-          pointer.lastX = event.clientX;
-          pointer.lastTime = now;
-          event.preventDefault();
-        }
-      });
-      const finishPointer = event => {
-        if (!pointer || pointer.id !== event.pointerId) return;
-        const finished = pointer;
-        if (finished.dragging) {
-          suppressNextClick = event.type === 'pointerup';
-          if (finished.pointerType === 'mouse' && Math.abs(finished.velocityX) > 0.18) {
-            shelf.scrollTo({ left: shelf.scrollLeft - finished.velocityX * 115, behavior: 'smooth' });
-          }
-        }
-        pointer = null;
-        shelf.style.scrollBehavior = '';
-        shelf.classList.remove('cursor-grabbing');
-      };
-      window.addEventListener('pointerup', finishPointer);
-      window.addEventListener('pointercancel', finishPointer);
-      shelf.addEventListener('click', event => {
-        const card = event.target.closest('.contributor-card');
-        if (!card || !shelf.contains(card)) return;
-        if (suppressNextClick) {
-          suppressNextClick = false;
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          return;
-        }
-        const id = card.dataset.contributorId;
-        const contributor = state.contributors.find(item => item.id === id);
-        if (contributor) openDossierFor(id);
-      });
       shelf.addEventListener('wheel', event => {
         if (shelf.scrollWidth <= shelf.clientWidth) return;
         if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
