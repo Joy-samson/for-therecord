@@ -979,6 +979,24 @@
     return '';
   }
 
+  // These Drive thumbnails have their upside-down rotation baked into the
+  // pixels (their EXIF orientation is 1), so the browser cannot auto-correct them.
+  const PHOTO_ROTATION_FIXES = new Map([
+    ['1PSk5PH6-MF1yQUQTlMa3UJA2SIL1kaKa', 180], // Namya
+    ['1blbGizwk-Kn-z4iOyoCE0PCWB__GfYCT', 180], // Namya
+    ['10lTuM-SVgNk778m9SuIStURnwrgn_uwy', 180], // Namya
+    ['1Rt6cNi8HG_msD2PwBk-QFGZaAdHS5BsC', 180], // Janhavi
+    ['1ZrXVtC3bbpVsWfyTLlzhpuXmVzmawj9t', 180], // Saa
+    ['1U95Y_MaWCvQe9nB8UjoIBZRkg0Rd2T4Y', 180]  // Rizna
+  ]);
+
+  function applyPhotoOrientation(image, rawUrl) {
+    const url = normalizePhotoUrl(rawUrl);
+    const fileId = url.match(/[?&]id=([a-z0-9_-]+)/i)?.[1];
+    const rotation = fileId ? PHOTO_ROTATION_FIXES.get(fileId) : 0;
+    image.style.transform = rotation ? `rotate(${rotation}deg)` : '';
+  }
+
   const lazyPhotoObserver = 'IntersectionObserver' in window
     ? new IntersectionObserver(entries => {
       entries.forEach(entry => {
@@ -994,6 +1012,7 @@
   function requestPhotoImage(image, rawUrl, eager = false) {
     const url = normalizePhotoUrl(rawUrl);
     if (!image || !url) return;
+    applyPhotoOrientation(image, url);
     image.decoding = 'async';
     image.loading = eager ? 'eager' : 'lazy';
     if (eager) {
