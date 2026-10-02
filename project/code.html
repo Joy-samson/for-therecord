@@ -1012,6 +1012,7 @@
   function requestPhotoImage(image, rawUrl, eager = false) {
     const url = normalizePhotoUrl(rawUrl);
     if (!image || !url) return;
+    image.style.imageOrientation = 'from-image';
     applyPhotoOrientation(image, url);
     image.decoding = 'async';
     image.loading = eager ? 'eager' : 'lazy';
