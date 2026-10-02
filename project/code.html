@@ -119,6 +119,33 @@
       background: #F6EEDC !important;
       padding: 12px 14px !important;
     }
+    .scrapbook-item.scrapbook-fragment {
+      width: min(100%, 220px) !important;
+      justify-self: center;
+      padding: 8px 10px 9px !important;
+      border-color: rgba(149, 121, 88, 0.42) !important;
+      box-shadow: 0 2px 7px rgba(45, 32, 22, 0.14), 0 1px 2px rgba(45, 32, 22, 0.08);
+    }
+    .scrapbook-item.scrapbook-fragment-1 {
+      background: #F2E7D3 !important;
+      border-left: 2px dotted rgba(128, 91, 64, 0.55) !important;
+    }
+    .scrapbook-item.scrapbook-fragment-2 {
+      background: rgba(250, 246, 235, 0.9) !important;
+      border-top: 1px dashed rgba(149, 121, 88, 0.5) !important;
+      border-bottom: 1px dashed rgba(149, 121, 88, 0.5) !important;
+      box-shadow: 0 2px 6px rgba(45, 32, 22, 0.1);
+    }
+    .scrapbook-item.scrapbook-fragment .scrapbook-fragment-copy {
+      font-family: 'Caveat', cursive !important;
+      font-size: 1.12rem !important;
+      line-height: 1.08 !important;
+    }
+    .scrapbook-item.scrapbook-fragment .scrapbook-fragment-byline {
+      font-family: 'Caveat', cursive !important;
+      font-size: 0.82rem !important;
+      text-transform: none !important;
+    }
     @media (max-width: 767px) {
       #scrapbook-canvas {
         min-height: 0;
@@ -1918,18 +1945,25 @@
       };
       const layoutTemplates = safeLayouts[next.group.key] || safeLayouts['mixed-archive'];
       const layout = shuffle(layoutTemplates)[0];
+      const supportingLabels = new Set(['MEMORY', 'MOST LIKELY TO', 'ONE THING ONLY REZA DOES', 'SOMETHING THEY REMEMBER']);
+      const fragmentCandidates = next.items.map((item, index) => ({ item, index })).filter(({ item }) => !item.photo && !item.quiz && !item.featured && (item.small || supportingLabels.has(item.label)));
+      const selectedFragmentIndexes = new Set(fragmentCandidates.filter(({ item }) => item.small).slice(0, 2).map(({ index }) => index));
+      const remainingFragmentSlots = Math.max(0, 3 - selectedFragmentIndexes.size);
+      fragmentCandidates.filter(({ item, index }) => !item.small && !selectedFragmentIndexes.has(index)).slice(0, remainingFragmentSlots).forEach(({ index }) => selectedFragmentIndexes.add(index));
       grid.innerHTML = next.items.map((item, index) => {
+        const supportingFragment = selectedFragmentIndexes.has(index);
+        const fragmentClass = supportingFragment && !item.photo && !item.quiz ? `scrapbook-fragment scrapbook-fragment-${Math.floor(Math.random() * 3)}` : '';
         const classes = item.photo ? 'bg-[#F8F2E8] scrapbook-photo' : item.featured ? 'bg-[#FFFDF8] scrapbook-featured' : item.folded ? 'bg-[#F6EAD8] scrapbook-folded' : item.quiz ? 'scrapbook-quiz' : item.small ? 'bg-[#F7EFD9]' : 'bg-[#FFFDF8]';
         const photoHeight = ['h-[100px] sm:h-[126px]', 'h-[116px] sm:h-[144px]', 'h-[130px] sm:h-[158px]'][Math.floor(Math.random() * 3)];
         const [row, column, columnSpan] = layout[index % layout.length];
         const rotation = (Math.random() * 2.8 - 1.4).toFixed(1);
         const content = item.photo
           ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" src="${escapeHtml(item.photo)}" alt="Submitted photograph from ${escapeHtml(item.name)}">`
-          : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(item.value)}</p>${item.full ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(item.full)}</p>` : ''}`;
-        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};grid-column:${column}/span ${columnSpan};grid-row:${row};--scrap-rotation:${rotation}deg">
+          : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} ${fragmentClass ? 'scrapbook-fragment-copy' : ''} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(item.value)}</p>${item.full ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(item.full)}</p>` : ''}`;
+        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} ${fragmentClass} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};grid-column:${column}/span ${columnSpan};grid-row:${row};--scrap-rotation:${rotation}deg">
           ${item.folded ? '<div class="absolute top-0 right-0 w-4 h-4 bg-[#E1CEB4] border-l border-b border-[#DECDBD] shadow-sm pointer-events-none"></div>' : item.photo ? '<div class="absolute top-0 left-5 right-5 h-1 border-x border-[#DECDBD]"></div>' : '<div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>'}
           <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-2">${escapeHtml(item.label)}</div>${content}
-          ${item.name && !item.hideName ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2">${escapeHtml(item.name)}</div>` : ''}
+          ${item.name && !item.hideName ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2 ${fragmentClass ? 'scrapbook-fragment-byline' : ''}">${escapeHtml(item.name)}</div>` : ''}
           ${item.quiz ? `<div class="flex flex-wrap gap-1.5 mt-3">${item.quiz.choices.map(person => `<button class="scrapbook-answer px-2 py-1 border border-[#BAA68B] bg-[#FAF5EB] font-mono text-[8px] uppercase" data-choice-id="${escapeHtml(person.id)}">${escapeHtml(person.name)}</button>`).join('')}</div><p class="scrapbook-feedback hidden font-mono text-[8px] uppercase mt-2"></p>` : ''}
         </article>`;
       }).join('');
