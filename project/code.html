@@ -92,7 +92,7 @@
       width: auto !important;
       min-width: 0;
       padding: 10px 12px !important;
-      transform: rotate(var(--scrap-rotation, 0deg));
+      transform: translate(var(--scrap-offset-x, 0px), var(--scrap-offset-y, 0px)) rotate(var(--scrap-rotation, 0deg));
       transform-origin: center center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -1835,20 +1835,27 @@
         if (sample.length >= min && (!requiresPhoto || sample.some(item => item.photo))) groups.push({ key, label, make });
       };
       add('photograph-memory', 'PHOTO WALL • MEMORY TABLE', () => compose(
-        { items: photoPool, count: 2 }, { items: memories, count: 1, decorate: item => ({ ...item, featured: true }) }, { items: photoStoryPool, count: 1 },
-        { items: little, count: 1 }, { items: messages, count: 2, decorate: item => ({ ...item, small: true }) }
+        { items: photoPool, count: 3 }, { items: memories, count: 1, decorate: item => ({ ...item, featured: true }) }, { items: photoStoryPool, count: 1 },
+        { items: little, count: 1 }, { items: little, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: messages, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) }
       ), 6, true);
       add('little-things', 'THE LITTLE THINGS', () => compose(
-        { items: little, count: 4 }, { items: photoPool, count: 1 }, { items: memories, count: 1 }, { items: messages, count: 2, decorate: item => ({ ...item, small: true }) }
+        { items: little, count: 3 }, { items: little, count: 3, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: photoPool, count: 1 }, { items: memories, count: 1 },
+        { items: messages, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) }, { items: photoStoryPool, count: 1 }
       ), 6);
       add('story', 'A STORY WORTH KEEPING', () => compose(
         { items: stories, count: 1, decorate: item => ({ ...item, featured: true }) }, { items: photoPool, count: 2 },
-        { items: photoStoryPool, count: 1 }, { items: memories, count: 1 }, { items: little, count: 1 },
-        { items: messages, count: 1, decorate: item => ({ ...item, small: true }) }
+        { items: photoStoryPool, count: 1 }, { items: memories, count: 1 }, { items: memories, count: 1, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: little, count: 1 }, { items: little, count: 1, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: messages, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) }
       ), 6, true);
       add('message-drawer', 'THE MESSAGE DRAWER', () => compose(
-        { items: messages, count: 2, decorate: item => ({ ...item, folded: true }) }, { items: photoPool, count: 2 },
-        { items: little, count: 1 }, { items: memories, count: 1 }, { items: photoStoryPool, count: 1 }
+        { items: messages, count: 1, decorate: item => ({ ...item, folded: true }) },
+        { items: messages, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: photoPool, count: 2 }, { items: little, count: 1 },
+        { items: little, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: memories, count: 1 }, { items: photoStoryPool, count: 1 }, { items: stories, count: 1 }
       ), 6);
       if (quizSources.length && real.length > 1) add('who-said-this', 'WHO SAID THIS?', () => {
         const source = shuffle(quizSources)[0];
@@ -1857,13 +1864,17 @@
         const choices = shuffle([correct, ...shuffle(real.filter(person => person.id !== correct.id)).slice(0, Math.min(3, real.length - 1))]);
         return compose(
           { items: [{ ...source, name: '', hideName: true, quiz: { answerId: correct.id, choices } }], count: 1 },
-          { items: photoPool, count: 1 }, { items: little, count: 2 }, { items: messages, count: 1, decorate: item => ({ ...item, small: true }) },
-          { items: memories, count: 1 }, { items: photoStoryPool, count: 1 }
+          { items: photoPool, count: 2 }, { items: little, count: 1 }, { items: little, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) },
+          { items: messages, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) },
+          { items: memories, count: 1 }, { items: memories, count: 1, decorate: item => ({ ...item, small: true, fragment: true }) }, { items: photoStoryPool, count: 1 }
         );
       }, 7);
       add('mixed-archive', 'MIXED ARCHIVE • TABLE NO. 06', () => compose(
-        { items: photoPool, count: 3 }, { items: memories, count: 1 }, { items: little, count: 2 },
-        { items: stories, count: 1, decorate: item => ({ ...item, featured: true }) }, { items: messages, count: 2, decorate: item => ({ ...item, small: true }) }, { items: photoStoryPool, count: 1 }
+        { items: photoPool, count: 3 }, { items: memories, count: 1, decorate: item => ({ ...item, featured: true }) },
+        { items: memories, count: 1, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: little, count: 2 }, { items: little, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: stories, count: 1 }, { items: stories, count: 1, decorate: item => ({ ...item, small: true, fragment: true }) },
+        { items: messages, count: 2, decorate: item => ({ ...item, small: true, fragment: true }) }, { items: photoStoryPool, count: 1 }
       ), 6, true);
       return groups;
     };
@@ -1884,12 +1895,12 @@
       if (!options.length) options = groups.filter(group => group.key !== currentState?.key);
       if (!options.length) options = groups;
       const group = shuffle(options)[0];
-      let items = shuffle(group.make());
+      let items = group.make();
       const makeSignature = values => `${group.key}:${values.map(item => `${item.sourceId || ''}:${item.label}:${item.photo || ''}:${item.value || ''}`).join('|')}`;
       let signature = makeSignature(items);
       let attempts = 0;
       while (signature === previousSignature && attempts++ < 8) {
-        items = shuffle(group.make());
+        items = group.make();
         signature = makeSignature(items);
       }
       return { group, items, signature, label: group.label };
@@ -1919,36 +1930,36 @@
       grid.classList.add('opacity-0');
       const safeLayouts = {
         'photograph-memory': [
-          [[1,1,3],[1,10,3],[1,4,6],[2,1,4],[2,5,4],[2,9,4],[3,4,5]],
-          [[1,1,3],[1,10,3],[1,4,6],[2,9,4],[2,1,4],[2,5,4],[3,4,5]]
+          [[1,1,3],[2,9,4],[3,1,3],[2,4,5],[3,5,4],[1,4,3],[2,1,3],[4,4,3],[1,7,3],[4,8,4]],
+          [[2,1,4],[1,10,3],[3,9,4],[1,4,6],[2,5,4],[3,1,4],[1,1,3],[4,1,3],[3,5,3],[4,7,4]]
         ],
         'little-things': [
-          [[1,1,3],[1,4,3],[1,7,3],[1,10,3],[2,1,4],[2,5,4],[2,9,4],[3,4,5]],
-          [[1,1,4],[1,5,4],[1,9,4],[2,5,4],[2,1,4],[2,9,4],[3,2,4],[3,7,4]]
+          [[1,1,3],[1,4,3],[1,7,3],[1,10,3],[2,1,3],[3,1,3],[2,8,5],[2,4,4],[3,4,4],[3,8,5],[4,4,5]],
+          [[1,4,3],[1,7,3],[1,10,3],[2,1,3],[2,4,3],[3,8,3],[1,1,3],[2,9,4],[3,1,4],[3,5,4],[4,5,4]]
         ],
         story: [
-          [[1,4,6],[1,1,3],[1,10,3],[2,1,4],[2,5,4],[2,9,4],[3,4,5]],
-          [[1,4,6],[1,10,3],[1,1,3],[2,9,4],[2,1,4],[2,5,4],[3,4,5]]
+          [[1,4,6],[1,1,3],[1,10,3],[2,1,4],[2,5,4],[2,9,4],[3,1,3],[3,4,3],[3,7,3],[4,5,4]],
+          [[1,1,6],[1,7,3],[2,10,3],[2,1,4],[2,5,4],[3,1,4],[3,5,3],[3,8,3],[4,2,4],[4,7,4]]
         ],
         'message-drawer': [
-          [[1,4,5],[2,10,3],[1,1,3],[1,10,3],[2,1,3],[2,4,3],[2,7,3]],
-          [[1,4,5],[2,7,3],[1,10,3],[1,1,3],[2,1,3],[2,4,3],[2,10,3]]
+          [[1,1,5],[3,1,4],[4,7,5],[1,6,7],[3,9,4],[2,1,3],[2,4,3],[2,10,3],[2,7,3],[4,1,5],[3,5,4]],
+          [[1,4,5],[4,5,3],[4,9,4],[1,9,4],[3,1,4],[2,5,3],[3,5,3],[2,8,5],[2,1,4],[4,1,4],[3,8,5]]
         ],
         'who-said-this': [
-          [[1,4,6],[1,1,3],[1,10,3],[2,1,3],[2,4,4],[2,8,5],[3,4,5]],
-          [[1,4,6],[1,10,3],[1,1,3],[2,5,4],[2,1,4],[2,9,4],[3,4,5]]
+          [[1,4,6],[1,1,3],[1,10,3],[2,1,3],[2,8,5],[4,1,3],[3,1,4],[3,9,4],[2,4,4],[3,5,4],[4,5,5]],
+          [[2,4,6],[1,1,3],[1,10,3],[1,4,3],[2,1,3],[3,10,3],[4,1,4],[4,8,4],[2,10,3],[3,5,4],[3,1,4]]
         ],
         'mixed-archive': [
-          [[1,1,3],[1,4,3],[1,10,3],[1,7,3],[2,1,3],[2,4,3],[2,7,6],[3,1,4],[3,5,4],[3,9,4]],
-          [[1,1,3],[1,10,3],[2,1,3],[2,4,4],[2,8,5],[3,1,3],[1,4,6],[3,4,3],[3,7,3],[3,10,3]]
+          [[1,1,3],[1,10,3],[2,1,4],[1,4,6],[3,1,3],[2,5,3],[2,8,2],[2,10,3],[3,10,3],[3,4,6],[4,8,2],[4,10,3],[4,1,3],[4,4,4]],
+          [[1,1,3],[1,10,3],[3,1,3],[1,4,6],[2,5,3],[2,8,2],[2,10,3],[3,10,3],[4,1,3],[3,4,6],[4,7,3],[4,10,3],[2,1,3],[4,4,3]]
         ]
       };
       const layoutTemplates = safeLayouts[next.group.key] || safeLayouts['mixed-archive'];
       const layout = shuffle(layoutTemplates)[0];
       const supportingLabels = new Set(['MEMORY', 'MOST LIKELY TO', 'ONE THING ONLY REZA DOES', 'SOMETHING THEY REMEMBER']);
-      const fragmentCandidates = next.items.map((item, index) => ({ item, index })).filter(({ item }) => !item.photo && !item.quiz && !item.featured && (item.small || supportingLabels.has(item.label)));
-      const selectedFragmentIndexes = new Set(fragmentCandidates.filter(({ item }) => item.small).slice(0, 2).map(({ index }) => index));
-      const remainingFragmentSlots = Math.max(0, 3 - selectedFragmentIndexes.size);
+      const fragmentCandidates = next.items.map((item, index) => ({ item, index })).filter(({ item }) => !item.photo && !item.quiz && !item.featured && (item.small || item.fragment || supportingLabels.has(item.label)));
+      const selectedFragmentIndexes = new Set(fragmentCandidates.filter(({ item }) => item.small || item.fragment).map(({ index }) => index));
+      const remainingFragmentSlots = Math.max(0, 4 - selectedFragmentIndexes.size);
       fragmentCandidates.filter(({ item, index }) => !item.small && !selectedFragmentIndexes.has(index)).slice(0, remainingFragmentSlots).forEach(({ index }) => selectedFragmentIndexes.add(index));
       grid.innerHTML = next.items.map((item, index) => {
         const supportingFragment = selectedFragmentIndexes.has(index);
@@ -1957,10 +1968,17 @@
         const photoHeight = ['h-[100px] sm:h-[126px]', 'h-[116px] sm:h-[144px]', 'h-[130px] sm:h-[158px]'][Math.floor(Math.random() * 3)];
         const [row, column, columnSpan] = layout[index % layout.length];
         const rotation = (Math.random() * 2.8 - 1.4).toFixed(1);
+        const offsetX = (Math.random() * 4 - 2).toFixed(1);
+        const offsetY = (Math.random() * 4 - 2).toFixed(1);
+        const compactBoundary = item.value ? item.value.slice(0, 92).lastIndexOf(' ') : -1;
+        const displayValue = fragmentClass && item.value.length > 98
+          ? `${item.value.slice(0, compactBoundary > 55 ? compactBoundary : 92).replace(/[ ,;:—-]+$/, '')}...`
+          : item.value;
+        const fullValue = item.full || (fragmentClass && item.value.length > 98 ? item.value : '');
         const content = item.photo
           ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" src="${escapeHtml(item.photo)}" alt="Submitted photograph from ${escapeHtml(item.name)}">`
-          : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} ${fragmentClass ? 'scrapbook-fragment-copy' : ''} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(item.value)}</p>${item.full ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(item.full)}</p>` : ''}`;
-        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} ${fragmentClass} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};grid-column:${column}/span ${columnSpan};grid-row:${row};--scrap-rotation:${rotation}deg">
+          : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} ${fragmentClass ? 'scrapbook-fragment-copy' : ''} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(displayValue)}</p>${fullValue ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(fullValue)}</p>` : ''}`;
+        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} ${fragmentClass} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};grid-column:${column}/span ${columnSpan};grid-row:${row};--scrap-rotation:${rotation}deg;--scrap-offset-x:${offsetX}px;--scrap-offset-y:${offsetY}px">
           ${item.folded ? '<div class="absolute top-0 right-0 w-4 h-4 bg-[#E1CEB4] border-l border-b border-[#DECDBD] shadow-sm pointer-events-none"></div>' : item.photo ? '<div class="absolute top-0 left-5 right-5 h-1 border-x border-[#DECDBD]"></div>' : '<div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>'}
           <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-2">${escapeHtml(item.label)}</div>${content}
           ${item.name && !item.hideName ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2 ${fragmentClass ? 'scrapbook-fragment-byline' : ''}">${escapeHtml(item.name)}</div>` : ''}
