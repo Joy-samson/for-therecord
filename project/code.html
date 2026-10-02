@@ -46,11 +46,21 @@
         repeating-linear-gradient(0deg, rgba(70,50,30,0.018) 0px, rgba(70,50,30,0.018) 1px, transparent 1px, transparent 4px);
       overflow-x: hidden;
     }
+    #vinyl-shelf-scroll {
+      overscroll-behavior-x: contain;
+      scroll-behavior: auto;
+      touch-action: pan-x;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    #vinyl-shelf-scroll::-webkit-scrollbar { display: none; height: 0; }
+    #vinyl-shelf-scroll .contributor-card { scale: var(--shelf-focus-scale, 1); transition: scale .22s ease, filter .3s ease; }
     body[data-archive-loading="true"] #side-a,
     body[data-archive-loading="true"] #scrapbook,
     body[data-archive-loading="true"] #vinyl-shelf-scroll,
     body[data-archive-loading="true"] #track-archive-slips,
     body[data-archive-loading="true"] #letter-front,
+    body[data-archive-loading="true"] #track-infinity,
     body[data-archive-loading="true"] aside.fixed.bottom-0 {
       visibility: hidden;
     }
@@ -335,7 +345,7 @@
 <!-- ========================================================================= -->
 <section class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-20 flex flex-col items-center overflow-visible" id="cover">
 <div class="w-full flex items-center justify-between text-ink-faint font-mono text-[10px] uppercase tracking-widest mb-10 border-b border-dashed border-[#C8B89F] pb-2">
-<span class="">ARCHIVAL OBJECT REF: RZ-2024-FOLIO</span>
+<span class="">ARCHIVAL OBJECT REF: RZ-FOLIO</span>
 <div class="flex items-center gap-3">
 <span class="text-oxblood font-bold transition-all duration-700" id="hero-status-pill">PARCEL SEALED • PULL THREAD TO UNTIE</span>
 <span class="">•</span>
@@ -585,11 +595,11 @@
 <circle cx="0" cy="0" fill="#E5CB9E" r="2"></circle>
 </g>
 </svg>
-</div><section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-[#D5C5AC]" id="side-a"><div class="mb-8 max-w-3xl"><div class="inline-block bg-stamp-red text-[#FFF7EE] font-mono text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 mb-2 shadow-sm border border-[#521A1F]">SIDE A</div><h2 class="font-serif text-3xl sm:text-5xl text-ink-black font-normal leading-tight tracking-tight">THE SOUNDTRACK OF REZA</h2><p class="font-mono text-xs text-ink-dim mt-1.5 tracking-wide uppercase">Songs chosen by the people who know her • Etched into master lacquer</p></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start"><div class="lg:col-span-5 lg:sticky lg:top-20 z-30 space-y-4"><div class="bg-[#231C19] p-5 sm:p-6 rounded-md shadow-2xl border border-[#3E322B] text-parchment flex flex-col items-center"><div class="w-full flex items-center justify-between font-mono text-[9px] uppercase tracking-widest text-[#A58B5A] mb-3"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gold inline-block"></span>AUDIOPHILE DECK</span><span class="text-gold font-bold transition-colors" id="deck-status">ETCHED IN GROOVE (SPINNING)</span></div><div class="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full vinyl-grooves shadow-inner flex items-center justify-center border-4 border-[#352B24] overflow-hidden" id="turntable-platter" style="transform: rotate(151.2deg);"><div class="absolute top-2 right-4 w-20 h-44 origin-top-right transition-transform duration-700 ease-in-out pointer-events-none z-30" id="deck-tonearm" style="transform: rotate(24deg);"><div class="w-4 h-4 rounded-full bg-gold border border-gold-light ml-auto shadow"></div><div class="w-1 h-32 bg-gradient-to-b from-gold via-gold-light to-gold ml-auto mr-1.5 shadow"></div><div class="w-3.5 h-6 bg-oxblood rounded-xs ml-auto mr-0.5 shadow flex items-center justify-center"><div class="w-1 h-1 bg-[#FFF7EE] rounded-full"></div></div></div><div class="w-24 h-24 rounded-full bg-oxblood border-2 border-gold flex flex-col items-center justify-center text-center p-2 shadow-xl" id="platter-label"><span class="font-mono text-[7px] text-gold uppercase tracking-wider" id="active-side-label">SIDE A</span><span class="font-serif italic text-[11px] text-parchment font-medium leading-tight truncate w-20" id="active-song-name">Gallan Goodiyan</span><span class="font-mono text-[6px] text-parchment/60 uppercase truncate w-20" id="active-artist-name">DIL DHADAKNE DO • 2015</span><div class="w-2.5 h-2.5 rounded-full bg-[#1A1513] border border-gold/40 mt-1"></div></div></div><div class="w-full mt-5 flex items-center justify-between pt-3 border-t border-[#3E322B]"><div class="font-mono text-[10px]"><span class="text-ink-faint block">CUT SELECTION:</span><span class="text-gold-light font-bold truncate max-w-[150px] block" id="needle-track-indicator">03 • Gallan Goodiyan</span></div><button class="px-3.5 py-1.5 bg-oxblood hover:bg-oxblood-rich text-parchment font-mono text-[10px] uppercase tracking-wider font-bold rounded-xs border border-gold/40 shadow transition-colors flex items-center gap-1.5 cursor-pointer" id="toggle-turntable-btn"><span class="material-symbols-outlined text-[16px]" id="play-icon">pause</span><span class="" id="play-text">REST NEEDLE</span></button></div></div><div class="bg-[#FAF5EB] p-4 sm:p-5 border border-[#D5C6AC] paper-edge-shadow relative select-none transition-all duration-300" id="sidea-sleeve-footnote-panel"><div class="tape-strip absolute -top-3 left-6 w-20 h-5 -rotate-2 pointer-events-none"></div><div class="flex items-center justify-between border-b border-dashed border-[#DFCDB2] pb-1.5 mb-2 font-mono text-[8.5px] uppercase tracking-wider text-ink-faint"><span class="text-oxblood font-bold tracking-widest" id="sidea-panel-header">SLEEVE FOOTNOTE • CURATOR NOTE</span><span class="font-script text-sm text-oxblood font-medium" id="sidea-panel-hand">in Samar &amp; Tanya's hand</span></div><p class="font-serif italic text-xs sm:text-sm text-ink-dim leading-snug my-2 transition-opacity duration-300" id="sidea-panel-quote" style="opacity: 1;">“Every single kitchen dance at midnight always ends with this blast.”</p><div class="pt-2 border-t border-[#E8DCC8] flex items-center justify-between font-mono text-[8px] text-ink-faint uppercase"><span class="" id="sidea-panel-cutref">CUT: A • 03 — GALLAN GOODIYAN</span><span class="text-stamp-red font-bold">ARCHIVE VERIFIED ◉</span></div></div></div><div class="lg:col-span-7"><div class="flex items-center justify-between mb-3 px-1 border-b border-dashed border-[#CBB89E] pb-1.5 font-mono text-[10px] text-ink-faint uppercase tracking-wider"><span class="">MASTER TRACK ARCHIVE • 18 RECORDINGS</span><span class="">CURATED FOR REZA</span></div><div class="space-y-2.5 max-h-[680px] overflow-y-auto pr-2 custom-track-scroll" id="track-archive-slips"><div class="track-slip cursor-pointer p-3 sm:p-3.5 border-l-4 border-l-oxblood border-y border-r border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5 bg-manila-card" data-artist="AE DIL HAI MUSHKIL • 2016" data-contributor="Meher Kaur" data-hand="in Meher's hand" data-note="Side A is what she sounds like to everyone else — the big beautiful one, the one people sing at her. The order is the argument." data-side="A" data-track="Channa Mereya" data-tracknum="01"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-oxblood font-bold tracking-wider">A • 01</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-semibold leading-snug">Channa Mereya</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">AE DIL HAI MUSHKIL • 2016</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Meher Kaur</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5 bg-manila-card" data-artist="JAB WE MET • 2007" data-contributor="Nadia Qureshi" data-hand="in Nadia's hand" data-note="On the drive through the hills when the mist rolled over the windscreen and everyone went quiet." data-side="A" data-track="Tum Se Hi" data-tracknum="02"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 02</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Tum Se Hi</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">JAB WE MET • 2007</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Nadia Qureshi</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5 bg-[#FAF3E4] border-oxblood" data-artist="DIL DHADAKNE DO • 2015" data-contributor="Samar &amp; Tanya" data-hand="in Samar &amp; Tanya's hand" data-note="Every single kitchen dance at midnight always ends with this blast." data-side="A" data-track="Gallan Goodiyan" data-tracknum="03"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 03</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Gallan Goodiyan</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">DIL DHADAKNE DO • 2015</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Samar &amp; Tanya</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5 bg-manila-card" data-artist="TAMASHA • 2015" data-contributor="Kabir Menon" data-hand="in Kabir's hand" data-note="What she sounds like at eleven at night in a parked car, when nobody is performing." data-side="A" data-track="Agar Tum Saath Ho" data-tracknum="04"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 04</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Agar Tum Saath Ho</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">TAMASHA • 2015</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Kabir Menon</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="ROCKSTAR • 2011" data-contributor="Nadia Qureshi" data-hand="in Nadia's hand" data-note="Played on loop while studying for finals on Nizamuddin balconies." data-side="A" data-track="Kun Faya Kun" data-tracknum="05"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 05</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Kun Faya Kun</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">ROCKSTAR • 2011</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Nadia Qureshi</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="WAKE UP SID • 2009" data-contributor="The Guild" data-hand="in The Guild's hand" data-note="For midnight monsoon walks on Marine Drive with wet shoes and warm coffee." data-side="A" data-track="Iktara" data-tracknum="06"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 06</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Iktara</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">WAKE UP SID • 2009</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by The Guild</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="BARFI! • 2012" data-contributor="Kabir Menon" data-hand="in Kabir's hand" data-note="Because Reza hums this whenever she makes toast on Sunday mornings." data-side="A" data-track="Phir Le Aya Dil" data-tracknum="07"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 07</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Phir Le Aya Dil</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">BARFI! • 2012</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Kabir Menon</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="LUOTERA • 2013" data-contributor="Meher Kaur" data-hand="in Meher's hand" data-note="The song when winter comes early to the hostel courtyard." data-side="A" data-track="Zinda" data-tracknum="08"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 08</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Zinda</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">LOOTERA • 2013</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Meher Kaur</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="OCTOBER • 2018" data-contributor="Tanya Sharma" data-hand="in Tanya's hand" data-note="No chorus, just stillness. Exactly how Reza listens when everyone else is shouting." data-side="A" data-track="The Theme of October" data-tracknum="09"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 09</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">The Theme of October</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">OCTOBER • 2018</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Tanya Sharma</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="QUEEN • 2014" data-contributor="Nadia Qureshi" data-hand="in Nadia's hand" data-note="After we packed Reza's first suitcase for London. Tears and laughter in identical measure." data-side="A" data-track="Kinare" data-tracknum="10"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 10</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Kinare</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">QUEEN • 2014</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Nadia Qureshi</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="ROCKSTAR • 2011" data-contributor="Samar Roy" data-hand="in Samar's hand" data-note="For the quiet confidence she never boasts about." data-side="A" data-track="Katiya Karun" data-tracknum="11"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 11</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Katiya Karun</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">ROCKSTAR • 2011</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Samar Roy</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="KAPOOR &amp; SONS • 2016" data-contributor="Kabir Menon" data-hand="in Kabir's hand" data-note="Reza always sings the second harmony part by ear." data-side="A" data-track="Saathi Rey" data-tracknum="12"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 12</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Saathi Rey</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">KAPOOR &amp; SONS • 2016</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Kabir Menon</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="HIGHWAY • 2014" data-contributor="Meher Kaur" data-hand="in Meher's hand" data-note="Open windows on the GT Road. Dust in our hair and nowhere to be." data-side="A" data-track="Patakha Guddi" data-tracknum="13"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 13</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Patakha Guddi</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">HIGHWAY • 2014</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Meher Kaur</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="DIL SE • 1998" data-contributor="The Guild" data-hand="in The Guild's hand" data-note="Because every road trip tape requires this master cut." data-side="A" data-track="Chaiyya Chaiyya" data-tracknum="14"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 14</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Chaiyya Chaiyya</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">DIL SE • 1998</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by The Guild</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="YUVA • 2004" data-contributor="Nadia Qureshi" data-hand="in Nadia's hand" data-note="The soundtrack of every rainy evening spent arguing over tea." data-side="A" data-track="Kabhi Neem Neem" data-tracknum="15"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 15</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Kabhi Neem Neem</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">YUVA • 2004</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Nadia Qureshi</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="SWADES • 2004" data-contributor="Kabir Menon" data-hand="in Kabir's hand" data-note="When the night turns late and everyone remembers what matters most." data-side="A" data-track="Yeh Jo Des Hai Tera" data-tracknum="16"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 16</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Yeh Jo Des Hai Tera</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">SWADES • 2004</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Kabir Menon</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="RANG DE BASANTI • 2006" data-contributor="Samar Roy" data-hand="in Samar's hand" data-note="Reza singing into a wooden spatula at 2 AM." data-side="A" data-track="Roobaroo" data-tracknum="17"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 17</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Roobaroo</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">RANG DE BASANTI • 2006</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by Samar Roy</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div><div class="track-slip cursor-pointer p-3 sm:p-3.5 bg-manila-card hover:bg-[#FAF3E4] border border-[#D8C9B0] paper-edge-shadow transition-all duration-200 hover:-translate-y-0.5" data-artist="GURU • 2007" data-contributor="The Guild" data-hand="in The Guild's hand" data-note="The rain dance song of all hostel monsoons." data-side="A" data-track="Barso Re" data-tracknum="18"><div class="flex items-center justify-between gap-2"><div class="flex items-baseline gap-3"><span class="font-mono text-xs text-ink-faint font-bold tracking-wider">A • 18</span><div><h3 class="font-serif text-lg sm:text-xl text-ink-black font-medium leading-snug">Barso Re</h3><p class="font-mono text-[9px] text-ink-dim tracking-wider uppercase">GURU • 2007</p></div></div><div class="flex items-center gap-2"><span class="font-script text-sm text-oxblood hidden sm:inline">chosen by The Guild</span><div class="w-7 h-7 rounded-full bg-[#E5D7BF] text-oxblood flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[16px]">play_arrow</span></div></div></div></div></div></div></div></section>
+</div><section class="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-[#D5C5AC]" id="side-a"><div class="mb-8 max-w-3xl"><div class="inline-block bg-stamp-red text-[#FFF7EE] font-mono text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 mb-2 shadow-sm border border-[#521A1F]">SIDE A</div><h2 class="font-serif text-3xl sm:text-5xl text-ink-black font-normal leading-tight tracking-tight">THE SOUNDTRACK OF REZA</h2><p class="font-mono text-xs text-ink-dim mt-1.5 tracking-wide uppercase">Songs chosen by the people who know her • Etched into master lacquer</p></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start"><div class="lg:col-span-5 lg:sticky lg:top-20 z-30 space-y-4"><div class="bg-[#231C19] p-5 sm:p-6 rounded-md shadow-2xl border border-[#3E322B] text-parchment flex flex-col items-center"><div class="w-full flex items-center justify-between font-mono text-[9px] uppercase tracking-widest text-[#A58B5A] mb-3"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gold inline-block"></span>AUDIOPHILE DECK</span><span class="text-gold font-bold transition-colors" id="deck-status">ETCHED IN GROOVE (SPINNING)</span></div><div class="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full vinyl-grooves shadow-inner flex items-center justify-center border-4 border-[#352B24] overflow-hidden" id="turntable-platter" style="transform: rotate(151.2deg);"><div class="absolute top-2 right-4 w-20 h-44 origin-top-right transition-transform duration-700 ease-in-out pointer-events-none z-30" id="deck-tonearm" style="transform: rotate(24deg);"><div class="w-4 h-4 rounded-full bg-gold border border-gold-light ml-auto shadow"></div><div class="w-1 h-32 bg-gradient-to-b from-gold via-gold-light to-gold ml-auto mr-1.5 shadow"></div><div class="w-3.5 h-6 bg-oxblood rounded-xs ml-auto mr-0.5 shadow flex items-center justify-center"><div class="w-1 h-1 bg-[#FFF7EE] rounded-full"></div></div></div><div class="w-24 h-24 rounded-full bg-oxblood border-2 border-gold flex flex-col items-center justify-center text-center p-2 shadow-xl" id="platter-label"><span class="font-mono text-[7px] text-gold uppercase tracking-wider" id="active-side-label">SIDE A</span><span class="font-serif italic text-[11px] text-parchment font-medium leading-tight truncate w-20" id="active-song-name">Gallan Goodiyan</span><span class="font-mono text-[6px] text-parchment/60 uppercase truncate w-20" id="active-artist-name">DIL DHADAKNE DO • 2015</span><div class="w-2.5 h-2.5 rounded-full bg-[#1A1513] border border-gold/40 mt-1"></div></div></div><div class="w-full mt-5 flex items-center justify-between pt-3 border-t border-[#3E322B]"><div class="font-mono text-[10px]"><span class="text-ink-faint block">CUT SELECTION:</span><span class="text-gold-light font-bold truncate max-w-[150px] block" id="needle-track-indicator">03 • Gallan Goodiyan</span></div><button class="px-3.5 py-1.5 bg-oxblood hover:bg-oxblood-rich text-parchment font-mono text-[10px] uppercase tracking-wider font-bold rounded-xs border border-gold/40 shadow transition-colors flex items-center gap-1.5 cursor-pointer" id="toggle-turntable-btn"><span class="material-symbols-outlined text-[16px]" id="play-icon">pause</span><span class="" id="play-text">REST NEEDLE</span></button></div></div><div class="bg-[#FAF5EB] p-4 sm:p-5 border border-[#D5C6AC] paper-edge-shadow relative select-none transition-all duration-300" id="sidea-sleeve-footnote-panel"><div class="tape-strip absolute -top-3 left-6 w-20 h-5 -rotate-2 pointer-events-none"></div><div class="flex items-center justify-between border-b border-dashed border-[#DFCDB2] pb-1.5 mb-2 font-mono text-[8.5px] uppercase tracking-wider text-ink-faint"><span class="text-oxblood font-bold tracking-widest" id="sidea-panel-header">SLEEVE FOOTNOTE • CURATOR NOTE</span><span class="font-script text-sm text-oxblood font-medium" id="sidea-panel-hand">in Samar &amp; Tanya's hand</span></div><p class="font-serif italic text-xs sm:text-sm text-ink-dim leading-snug my-2 transition-opacity duration-300" id="sidea-panel-quote" style="opacity: 1;">“Every single kitchen dance at midnight always ends with this blast.”</p><div class="pt-2 border-t border-[#E8DCC8] flex items-center justify-between font-mono text-[8px] text-ink-faint uppercase"><span class="" id="sidea-panel-cutref">CUT: A • 03 — GALLAN GOODIYAN</span><span class="text-stamp-red font-bold">ARCHIVE VERIFIED ◉</span></div></div></div><div class="lg:col-span-7"><div class="flex items-center justify-between mb-3 px-1 border-b border-dashed border-[#CBB89E] pb-1.5 font-mono text-[10px] text-ink-faint uppercase tracking-wider"><span class="">MASTER TRACK ARCHIVE • 18 RECORDINGS</span><span class="">CURATED FOR REZA</span></div><div class="space-y-2.5 max-h-[680px] overflow-y-auto pr-2 custom-track-scroll" id="track-archive-slips"></div></div></div></section>
 <!-- ========================================================================= -->
 <!-- 3. SIDE B — THE PEOPLE BEHIND THE MUSIC                                  -->
 <!-- ========================================================================= -->
-<section class="w-full min-h-[100svh] py-24 md:py-32 bg-[#E6DAC4]/60 border-t border-b border-[#D5C5AC] relative flex flex-col justify-center" id="side-b"><!-- Subtle Background Archival Environment & Concentric Grooves (Negative Space Texture) --><div class="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[980px] h-[980px] rounded-full border border-[#71363B]/10 opacity-70"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[780px] h-[780px] rounded-full border border-dashed border-[#8C7665]/20 opacity-50"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full border border-[#71363B]/10 opacity-60"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-dotted border-[#8C7665]/25 opacity-40"></div><div class="absolute top-8 left-8 text-[9px] font-mono text-[#8C7665]/60 tracking-[0.25em] uppercase hidden md:block">FOLIO REF: B-SERIES // RZ-2024.COLLECTION</div><div class="absolute top-8 right-8 text-[9px] font-mono text-[#8C7665]/60 tracking-[0.25em] uppercase hidden md:block">LATHE CUT VERIFIED • SHELF POS. 01–40</div><div class="absolute left-4 top-1/3 -rotate-90 origin-left text-[8px] font-mono uppercase tracking-[0.25em] text-[#8C7665]/40 hidden lg:block">SECTION B // AUDIOPHILE DEPOSIT • PRESSING MATRIX RZ-B</div><div class="absolute right-4 top-2/3 rotate-90 origin-right text-[8px] font-mono uppercase tracking-[0.25em] text-[#8C7665]/40 hidden lg:block">MASTER ARCHIVE • ETCHED LACQUER RUNOUT</div><div class="absolute top-20 left-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div><div class="absolute top-20 right-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div><div class="absolute bottom-20 left-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div><div class="absolute bottom-20 right-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div></div><div class="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 mb-8"><div class="flex items-center justify-between border-b border-dashed border-[#BAA68B] pb-1.5 mb-4 text-[8.5px] font-mono uppercase tracking-[0.22em] text-[#8C7665]"><span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#71363B]"></span>CATALOGUE B • ARCHIVAL EDITION 01 OF 01 • MASTER LACQUER ETCHING</span><span class="hidden sm:inline text-oxblood font-bold">FOLIO SHELF REGISTER • DEPOSIT 2024</span></div><div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#D8C9B0] pb-4"><div><div class="inline-flex items-center gap-2 mb-2"><span class="bg-[#71363B] text-[#FFF8F4] font-mono text-[10px] tracking-widest uppercase px-2 py-0.5 border border-[#521A1F] font-bold">Side B</span><span class="text-[11px] uppercase tracking-widest font-mono text-[#8C7665]">Private Pressings Collection</span></div><h2 class="font-serif text-3xl sm:text-5xl text-ink-black font-normal tracking-tight">The People Behind the Music</h2><p class="font-mono text-xs text-ink-dim uppercase tracking-wider mt-1.5">A private collection of archival pressings • Select a sleeve to open dossier</p></div><div class="flex items-center gap-3 font-mono text-[10px] text-ink-faint"><span class="hidden sm:inline uppercase tracking-widest">DRAG OR SCROLL ARCHIVAL SHELF ↔</span><div class="flex items-center gap-1.5"><button aria-label="Scroll shelf left" class="w-8 h-8 rounded-full bg-manila-card hover:bg-[#FAF3E3] border border-[#CBB89E] flex items-center justify-center text-oxblood shadow-xs transition-transform active:scale-95 cursor-pointer" id="shelf-prev"><span class="material-symbols-outlined text-[16px]">arrow_back</span></button><button aria-label="Scroll shelf right" class="w-8 h-8 rounded-full bg-manila-card hover:bg-[#FAF3E3] border border-[#CBB89E] flex items-center justify-center text-oxblood shadow-xs transition-transform active:scale-95 cursor-pointer" id="shelf-next"><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button></div></div></div></div><!-- Horizontal Scrollable Shelf of Contributor Vinyls with Grounding Plane & Millimeter Ticks --><div class="relative z-10 w-full overflow-visible"><div class="w-full overflow-x-auto overflow-y-visible px-4 sm:px-8 pt-4 pb-12 custom-track-scroll select-none cursor-grab active:cursor-grabbing relative" id="vinyl-shelf-scroll"><div class="flex items-end gap-10 min-w-max px-4 sm:px-8 pb-4 relative z-10"><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[-0.8deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-001"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-oxblood border border-gold/40 flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-parchment font-bold">RZ-01</span></div></div><div class="relative z-10 w-full h-full bg-manila-card p-5 border border-[#D5C6AC] paper-edge-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-ink-faint border-b border-dashed border-[#DFCEB3] pb-1.5"><span class="">RZ-001</span><span class="text-oxblood font-bold">SINGLE • 33⅓</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-ink-black font-medium tracking-tight">Nadia Qureshi</h3><p class="font-script text-base text-oxblood mt-0.5">she is “Reza-ji”</p><p class="font-mono text-[9px] uppercase tracking-wider text-ink-dim mt-2">Flatmate • 6 Years</p></div><div class="border-t border-[#E8DCC8] pt-2 flex items-center justify-between font-mono text-[7.5px] text-ink-faint uppercase"><span class="">chaotic • loyal • home</span><span class="text-oxblood font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[0.6deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-002"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-manila-card border border-[#C5B499] flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-ink-black font-bold">RZ-02</span></div></div><div class="relative z-10 w-full h-full bg-[#4D1C22] p-5 border border-[#3A1419] deep-vinyl-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-[#FFF8ED] border-b border-dashed border-[#8A434B] pb-1.5"><span class="">RZ-002</span><span class="text-[#FFF8ED] font-bold">THE REZA EP</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-[#FFF8ED] font-normal tracking-tight">Kabir Menon</h3><p class="font-script text-base text-[#F5E6D0] mt-0.5">she is “Reza didi”</p><p class="font-mono text-[9px] uppercase tracking-wider text-[#E8D8C4] mt-2">School Friend • 14 Years</p></div><div class="border-t border-[#8A434B] pt-2 flex items-center justify-between font-mono text-[7.5px] text-[#FFF8ED] uppercase"><span class="">loud • nosy • unyielding</span><span class="text-[#FFF8ED] font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[-0.4deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-003"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-oxblood border border-gold/40 flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-parchment font-bold">RZ-03</span></div></div><div class="relative z-10 w-full h-full bg-manila-card p-5 border border-[#D5C6AC] paper-edge-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-ink-faint border-b border-dashed border-[#DFCEB3] pb-1.5"><span class="">RZ-003</span><span class="text-oxblood font-bold">FOLIO • 33⅓</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-ink-black font-medium tracking-tight">Meher Kaur</h3><p class="font-script text-base text-oxblood mt-0.5">she is “Reeza”</p><p class="font-mono text-[9px] uppercase tracking-wider text-ink-dim mt-2">Roommate • 7 Years</p></div><div class="border-t border-[#E8DCC8] pt-2 flex items-center justify-between font-mono text-[7.5px] text-ink-faint uppercase"><span class="">soft • sharp • home</span><span class="text-oxblood font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[0.5deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-004"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-manila-card border border-[#C5B499] flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-ink-black font-bold">RZ-04</span></div></div><div class="relative z-10 w-full h-full bg-[#4D1C22] p-5 border border-[#3A1419] deep-vinyl-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-[#FFF8ED] border-b border-dashed border-[#8A434B] pb-1.5"><span class="">RZ-004</span><span class="text-[#FFF8ED] font-bold">DUAL SINGLE</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-[#FFF8ED] font-normal tracking-tight">Samar &amp; Tanya</h3><p class="font-script text-base text-[#F5E6D0] mt-0.5">she is “Captain Reza”</p><p class="font-mono text-[9px] uppercase tracking-wider text-[#E8D8C4] mt-2">Dinner Crew • 5 Years</p></div><div class="border-t border-[#8A434B] pt-2 flex items-center justify-between font-mono text-[7.5px] text-[#FFF8ED] uppercase"><span class="">warmth • feast • shelter</span><span class="text-[#FFF8ED] font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[-0.6deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-005"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-oxblood border border-gold/40 flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-parchment font-bold">RZ-05</span></div></div><div class="relative z-10 w-full h-full bg-manila-card p-5 border border-[#D5C6AC] paper-edge-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-ink-faint border-b border-dashed border-[#DFCEB3] pb-1.5"><span class="">RZ-005</span><span class="text-oxblood font-bold">CUT ARCHIVE</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-ink-black font-medium tracking-tight">Rohan Mehta</h3><p class="font-script text-base text-oxblood mt-0.5">she is “The Professor”</p><p class="font-mono text-[9px] uppercase tracking-wider text-ink-dim mt-2">Debate Partner • 8 Years</p></div><div class="border-t border-[#E8DCC8] pt-2 flex items-center justify-between font-mono text-[7.5px] text-ink-faint uppercase"><span class="">measured • razor • steady</span><span class="text-oxblood font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[0.4deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-006"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-manila-card border border-[#C5B499] flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-ink-black font-bold">RZ-06</span></div></div><div class="relative z-10 w-full h-full bg-[#4D1C22] p-5 border border-[#3A1419] deep-vinyl-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-[#FFF8ED] border-b border-dashed border-[#8A434B] pb-1.5"><span class="">RZ-006</span><span class="text-[#FFF8ED] font-bold">ACOUSTIC EP</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-[#FFF8ED] font-normal tracking-tight">Ananya Sen</h3><p class="font-script text-base text-[#F5E6D0] mt-0.5">she is “Chhoti Chai”</p><p class="font-mono text-[9px] uppercase tracking-wider text-[#E8D8C4] mt-2">Hostel Neighbor • 6 Years</p></div><div class="border-t border-[#8A434B] pt-2 flex items-center justify-between font-mono text-[7.5px] text-[#FFF8ED] uppercase"><span class="">giggles • secrets • sunrise</span><span class="text-[#FFF8ED] font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[-0.3deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-007"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-oxblood border border-gold/40 flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-parchment font-bold">RZ-07</span></div></div><div class="relative z-10 w-full h-full bg-manila-card p-5 border border-[#D5C6AC] paper-edge-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-ink-faint border-b border-dashed border-[#DFCEB3] pb-1.5"><span class="">RZ-007</span><span class="text-oxblood font-bold">SINGLE • MONO</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-ink-black font-medium tracking-tight">Vikram Roy</h3><p class="font-script text-base text-oxblood mt-0.5">she is “The Navigator”</p><p class="font-mono text-[9px] uppercase tracking-wider text-ink-dim mt-2">Road Trip Crew • 5 Years</p></div><div class="border-t border-[#E8DCC8] pt-2 flex items-center justify-between font-mono text-[7.5px] text-ink-faint uppercase"><span class="">maps • silence • iron</span><span class="text-oxblood font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[0.7deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-008"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-manila-card border border-[#C5B499] flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-ink-black font-bold">RZ-08</span></div></div><div class="relative z-10 w-full h-full bg-[#4D1C22] p-5 border border-[#3A1419] deep-vinyl-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-[#FFF8ED] border-b border-dashed border-[#8A434B] pb-1.5"><span class="">RZ-008</span><span class="text-[#FFF8ED] font-bold">DUAL CUT</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-[#FFF8ED] font-normal tracking-tight">Tara &amp; Arjun</h3><p class="font-script text-base text-[#F5E6D0] mt-0.5">she is “Reza Masi”</p><p class="font-mono text-[9px] uppercase tracking-wider text-[#E8D8C4] mt-2">Childhood Circle • 12 Years</p></div><div class="border-t border-[#8A434B] pt-2 flex items-center justify-between font-mono text-[7.5px] text-[#FFF8ED] uppercase"><span class="">roots • laughter • gold</span><span class="text-[#FFF8ED] font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[-0.5deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-009"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-oxblood border border-gold/40 flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-parchment font-bold">RZ-09</span></div></div><div class="relative z-10 w-full h-full bg-manila-card p-5 border border-[#D5C6AC] paper-edge-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-ink-faint border-b border-dashed border-[#DFCEB3] pb-1.5"><span class="">RZ-009</span><span class="text-oxblood font-bold">STUDIO CUT</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-ink-black font-medium tracking-tight">Zoya Siddiqui</h3><p class="font-script text-base text-oxblood mt-0.5">she is “Poet-in-Residence”</p><p class="font-mono text-[9px] uppercase tracking-wider text-ink-dim mt-2">Library Cohort • 4 Years</p></div><div class="border-t border-[#E8DCC8] pt-2 flex items-center justify-between font-mono text-[7.5px] text-ink-faint uppercase"><span class="">verse • stillness • grace</span><span class="text-oxblood font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div><div class="contributor-card group relative w-[260px] h-[260px] cursor-pointer rotate-[0.3deg] shrink-0 drop-shadow-md hover:drop-shadow-xl transition-all duration-300" data-id="RZ-010"><div class="absolute top-3 -right-8 w-44 h-44 rounded-full vinyl-grooves z-0 group-hover:-right-12 transition-all duration-300 shadow-xl flex items-center justify-center pointer-events-none"><div class="w-14 h-14 rounded-full bg-manila-card border border-[#C5B499] flex items-center justify-center text-center p-1"><span class="font-mono text-[6.5px] text-ink-black font-bold">RZ-10</span></div></div><div class="relative z-10 w-full h-full bg-[#4D1C22] p-5 border border-[#3A1419] deep-vinyl-shadow flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:scale-[1.03]"><div class="flex items-start justify-between font-mono text-[8px] tracking-widest uppercase text-[#FFF8ED] border-b border-dashed border-[#8A434B] pb-1.5"><span class="">RZ-010</span><span class="text-[#FFF8ED] font-bold">FIELD MASTER</span></div><div class="my-auto text-center py-2"><h3 class="font-serif text-2xl text-[#FFF8ED] font-normal tracking-tight">Devendra P.</h3><p class="font-script text-base text-[#F5E6D0] mt-0.5">she is “Reza Captain”</p><p class="font-mono text-[9px] uppercase tracking-wider text-[#E8D8C4] mt-2">Studio Mentor • 9 Years</p></div><div class="border-t border-[#8A434B] pt-2 flex items-center justify-between font-mono text-[7.5px] text-[#FFF8ED] uppercase"><span class="">craft • courage • anchor</span><span class="text-[#FFF8ED] font-bold tracking-widest text-[9px]">DOSSIER →</span></div></div></div></div><!-- Physical Rest Rail & Millimeter Graduated Hairline Base --><div class="absolute bottom-8 inset-x-0 h-4 border-t-2 border-[#8C7665]/60 flex items-center justify-between px-6 pointer-events-none z-0"><div class="w-full flex items-center justify-between text-[7px] font-mono text-[#8C7665]/50 tracking-[0.4em] select-none"><span class="">| 01</span><span class="">| 02</span><span class="">| 03</span><span class="">| 04</span><span class="">| 05</span><span class="">| 06</span><span class="">| 07</span><span class="">| 08</span><span class="">| 09</span><span class="">| 10</span></div></div></div></div></section>
+<section class="w-full min-h-[100svh] py-24 md:py-32 bg-[#E6DAC4]/60 border-t border-b border-[#D5C5AC] relative flex flex-col justify-center" id="side-b"><!-- Subtle Background Archival Environment & Concentric Grooves (Negative Space Texture) --><div class="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none"><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[980px] h-[980px] rounded-full border border-[#71363B]/10 opacity-70"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[780px] h-[780px] rounded-full border border-dashed border-[#8C7665]/20 opacity-50"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[580px] rounded-full border border-[#71363B]/10 opacity-60"></div><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] rounded-full border border-dotted border-[#8C7665]/25 opacity-40"></div><div class="absolute top-8 left-8 text-[9px] font-mono text-[#8C7665]/60 tracking-[0.25em] uppercase hidden md:block">FOLIO REF: B-SERIES // RZ.COLLECTION</div><div class="absolute top-8 right-8 text-[9px] font-mono text-[#8C7665]/60 tracking-[0.25em] uppercase hidden md:block">LATHE CUT VERIFIED • SHELF POS. 01–40</div><div class="absolute left-4 top-1/3 -rotate-90 origin-left text-[8px] font-mono uppercase tracking-[0.25em] text-[#8C7665]/40 hidden lg:block">SECTION B // AUDIOPHILE DEPOSIT • PRESSING MATRIX RZ-B</div><div class="absolute right-4 top-2/3 rotate-90 origin-right text-[8px] font-mono uppercase tracking-[0.25em] text-[#8C7665]/40 hidden lg:block">MASTER ARCHIVE • ETCHED LACQUER RUNOUT</div><div class="absolute top-20 left-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div><div class="absolute top-20 right-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div><div class="absolute bottom-20 left-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div><div class="absolute bottom-20 right-16 text-[#8C7665]/30 font-mono text-xs hidden md:block">+</div></div><div class="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 mb-8"><div class="flex items-center justify-between border-b border-dashed border-[#BAA68B] pb-1.5 mb-4 text-[8.5px] font-mono uppercase tracking-[0.22em] text-[#8C7665]"><span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#71363B]"></span>CATALOGUE B • ARCHIVAL EDITION 01 OF 01 • MASTER LACQUER ETCHING</span><span class="hidden sm:inline text-oxblood font-bold">FOLIO SHELF REGISTER • DEPOSIT ARCHIVE</span></div><div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-[#D8C9B0] pb-4"><div><div class="inline-flex items-center gap-2 mb-2"><span class="bg-[#71363B] text-[#FFF8F4] font-mono text-[10px] tracking-widest uppercase px-2 py-0.5 border border-[#521A1F] font-bold">Side B</span><span class="text-[11px] uppercase tracking-widest font-mono text-[#8C7665]">Private Pressings Collection</span></div><h2 class="font-serif text-3xl sm:text-5xl text-ink-black font-normal tracking-tight">The People Behind the Music</h2><p class="font-mono text-xs text-ink-dim uppercase tracking-wider mt-1.5">A private collection of archival pressings • Select a sleeve to open dossier</p></div><div class="flex items-center gap-3 font-mono text-[10px] text-ink-faint"><span class="hidden sm:inline uppercase tracking-widest">DRAG OR SCROLL ARCHIVAL SHELF ↔</span><div class="flex items-center gap-1.5"><button aria-label="Scroll shelf left" class="w-8 h-8 rounded-full bg-manila-card hover:bg-[#FAF3E3] border border-[#CBB89E] flex items-center justify-center text-oxblood shadow-xs transition-transform active:scale-95 cursor-pointer" id="shelf-prev"><span class="material-symbols-outlined text-[16px]">arrow_back</span></button><button aria-label="Scroll shelf right" class="w-8 h-8 rounded-full bg-manila-card hover:bg-[#FAF3E3] border border-[#CBB89E] flex items-center justify-center text-oxblood shadow-xs transition-transform active:scale-95 cursor-pointer" id="shelf-next"><span class="material-symbols-outlined text-[16px]">arrow_forward</span></button></div></div></div></div><!-- Horizontal Scrollable Shelf of Contributor Vinyls with Grounding Plane & Millimeter Ticks --><div class="relative z-10 w-full overflow-visible"><div class="w-full overflow-x-auto overflow-y-visible px-4 sm:px-8 pt-4 pb-12 custom-track-scroll select-none cursor-grab active:cursor-grabbing relative" id="vinyl-shelf-scroll" tabindex="0" role="region" aria-label="Horizontal shelf of contributor archives"></div></div></section>
 <!-- ========================================================================= -->
 <!-- 4. MODAL / PULL-OUT RECORD DOSSIER                                        -->
 <!-- ========================================================================= -->
@@ -612,12 +622,12 @@
   <div class="absolute -top-3 right-8 px-3 py-0.5 bg-[#E8DCBF]/50 border border-[#C5B499] text-[8px] font-mono tracking-widest text-[#8C7665] uppercase hidden sm:block">DEPOSIT REF: RZ-FOLIO</div>
   <div class="flex items-center justify-between border-b border-dashed border-[#C8B89F] pb-2 mb-6 font-mono text-[9px] uppercase tracking-widest text-ink-faint">
     <span class="text-stamp-red font-bold flex items-center gap-1.5"><span class="material-symbols-outlined text-xs">inventory_2</span> ARCHIVAL DOSSIER FILE // CONFIDENTIAL</span>
-    <span class="hidden sm:inline text-ink-faint">ACCESSION NO. 2024-RZ</span>
+    <span class="hidden sm:inline text-ink-faint">ACCESSION NO. RZ-FOLIO</span>
   </div>
   <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 mb-6">
     <div>
       <div class="font-mono text-xs uppercase tracking-widest text-stamp-red font-bold mb-1" id="modal-catalog-stamp">RZ-003 • FOLIO</div>
-      <h2 class="font-serif text-4xl sm:text-6xl text-ink-black font-normal leading-none tracking-tight" id="modal-name">Meher Kaur</h2>
+      <h2 class="font-serif text-4xl sm:text-6xl text-ink-black font-normal leading-none tracking-tight" id="modal-name"></h2>
     </div>
     <p class="font-mono text-xs uppercase tracking-wider text-ink-dim">
       SHE IS CALLED <span class="font-script text-2xl sm:text-3xl normal-case text-oxblood ml-1 font-bold inline-block -rotate-1" id="modal-nickname">“Reeza”</span>
@@ -627,7 +637,7 @@
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-[#DFCEB3] font-mono text-[10px]">
     <div class="bg-[#F5EDE0] p-3 border border-[#DECDBD]">
       <span class="block text-[8px] uppercase tracking-wider text-ink-faint mb-1">HOW THEY KNOW HER</span>
-      <p class="font-serif text-base text-ink-black font-medium leading-snug" id="modal-relation">University Roommate • 2017–2024</p>
+      <p class="font-serif text-base text-ink-black font-medium leading-snug" id="modal-relation"></p>
     </div>
     <div class="bg-[#F5EDE0] p-3 border border-[#DECDBD]">
       <span class="block text-[8px] uppercase tracking-wider text-ink-faint mb-1">ARCHIVAL TENURE</span>
@@ -785,200 +795,16 @@
 
 <script id="dossier-archival-dynamic-script" class="">
 (function() {
-  const fallbackContributors = {
-    'RZ-001': {
-      folderTab: 'RZ-001 // ARCHIVE DOSSIER',
-      catalogStamp: 'RZ-001 • SINGLE • 33⅓',
-      name: 'Nadia Qureshi',
-      nickname: 'Reza-ji',
-      relation: 'Flatmate • 2018–2024',
-      tenure: '6 Years of Shared Keys & Monsoons',
-      words: ['CHAOTIC', 'LOYAL', 'HOME'],
-      primaryPhoto: 'https://images.unsplash.com/photo-1517841905240-472988c247ac?auto=format&fit=crop&w=1200&q=80',
-      primaryCaption: '“Kitchen morning in Nizamuddin, laughing so hard the tea boiled over.”',
-      secondaryPhoto: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
-      secondaryCaption: '“The two cracked mugs she insisted on saving.”',
-      plateRef: 'PLATE I • NEG. 14',
-      soundtrackHeader: 'THEIR SOUNDTRACK // THE REZA EP',
-      tracks: [
-        { cut: 'CUT 01', track: 'Tum Se Hi', movie: 'JAB WE MET • 2007', time: '5:23', sideTrack: 'SIDE A • TRACK 02' },
-        { cut: 'CUT 02', track: 'Kun Faya Kun', movie: 'ROCKSTAR • 2011', time: '7:53', sideTrack: 'SIDE A • TRACK 05' }
-      ],
-      whyHand: 'in Nadia’s hand',
-      whyText: '“On the drive through the hills when the mist rolled over the windscreen and everyone went quiet. Reza had her head tilted against the window and didn’t speak for forty miles. It’s what peace looks like.”',
-      dispatchRef: 'DISPATCH REF: NQ-18',
-      memoryText: '“The radiator hissed for five winter months in our tiny apartment and neither of us called the super because it gave us an excuse to drink spiced chai at 1 AM. Reza knew which cup had the chipped rim and kept it for herself every time.”',
-      memoryLoc: 'Location: Flat 4B, Nizamuddin East',
-      storyText: '“When you live with someone for six years, you learn their silence as clearly as their voice. Reza never asks for attention, but when she notices you are having a rough day, she leaves a peeled clementine on your desk and walks away without looking back.”',
-      likely: 'Accidentally adopt a stray cat while walking back from the grocery store.',
-      only: 'Counts songs in road trips rather than miles or hours.',
-      remember: 'The rainstorm where we sat on the fire escape eating ice cream until our fingers froze.',
-      other: 'Leaves tiny encouraging sticky notes inside books you haven’t opened yet.',
-      messageText: '“Reza-ji, no matter how wide the world gets, our kettle is always on for you. Happy Birthday.”',
-      postmark: 'POSTMARKED: NIZAMUDDIN EAST • ARCHIVE STAMP',
-      signature: '— With love always, Nadia',
-      songs: [
-        { spotifyUrl: 'https://open.spotify.com/track/3Y9fZJ8VZ5o8fJjz6Z9X8L', whyThisSong: 'It feels like our late-night kitchen conversations.' },
-        { spotifyUrl: 'https://open.spotify.com/track/0Q9t1w0Qf5b4k7MbJjpF7w', whyThisSong: 'The kind of song you play when the room goes quiet.' }
-      ],
-      photos: [
-        'https://images.unsplash.com/photo-1517841905240-472988c247ac?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80'
-      ],
-      photoStory: 'Kitchen mornings and bad tea before the world got loud.',
-      memory: 'The radiator hissed for five winter months in our tiny apartment and neither of us called the super because it gave us an excuse to drink spiced chai at 1 AM.',
-      story: 'When you live with someone for six years, you learn their silence as clearly as their voice.',
-      birthdayMessage: 'Reza-ji, no matter how wide the world gets, our kettle is always on for you. Happy Birthday.',
-      mostLikelyTo: 'Accidentally adopt a stray cat while walking back from the grocery store.',
-      oneThingOnlyRezaDoes: 'Counts songs in road trips rather than miles or hours.',
-      somethingAboutReza: 'The rainstorm where we sat on the fire escape eating ice cream until our fingers froze.',
-      anythingElse: 'Leaves tiny encouraging sticky notes inside books you haven’t opened yet.'
-    },
-    'RZ-002': {
-      folderTab: 'RZ-002 // ARCHIVE DOSSIER',
-      catalogStamp: 'RZ-002 • THE REZA EP',
-      name: 'Kabir Menon',
-      nickname: 'Reza didi',
-      relation: 'School Friend • 2010–2024',
-      tenure: '14 Years of Unbroken Trust',
-      words: ['LOUD', 'NOSY', 'UNYIELDING'],
-      primaryPhoto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80',
-      primaryCaption: '“Old library steps during our first term finals.”',
-      secondaryPhoto: 'https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=1200&q=80',
-      secondaryCaption: '“The cassette player we dragged to debate tournaments.”',
-      plateRef: 'PLATE II • NEG. 42',
-      soundtrackHeader: 'THEIR SOUNDTRACK // THE REZA EP',
-      tracks: [
-        { cut: 'CUT 01', track: 'Agar Tum Saath Ho', movie: 'TAMASHA • 2015', time: '5:41', sideTrack: 'SIDE A • TRACK 04' },
-        { cut: 'CUT 02', track: 'Phir Le Aya Dil', movie: 'BARFI! • 2012', time: '5:05', sideTrack: 'SIDE A • TRACK 07' }
-      ],
-      whyHand: 'in Kabir’s hand',
-      whyText: '“What she sounds like at eleven at night in a parked car, when nobody is performing. She listened to me pace up and down the pavement when I failed my board entrance and made me grilled cheese at sunrise.”',
-      dispatchRef: 'DISPATCH REF: KM-41',
-      memoryText: '“In fourteenth grade she stayed on an international phone call with me for four hours while I waited in the emergency ward for test results. She didn’t talk much, just hummed old songs so I knew she hadn’t hung up.”',
-      memoryLoc: 'Location: St. Columba’s library corridor',
-      storyText: '“Fourteen years is long enough to watch someone grow into the person they always promised they would be. Reza has never abandoned a single person who needed her.”',
-      likely: 'Defend someone she barely knows in a public dispute because she saw an injustice.',
-      only: 'Draws a tiny smiley face in the dot of every question mark.',
-      remember: 'The road trip where the tire burst and she insisted on learning how to change it herself.',
-      other: 'Refuses to let anyone sit alone in a room where music is playing.',
-      messageText: '“Didi, you taught me that staying gentle is the hardest kind of courage. Thank you for showing up every single time.”',
-      postmark: 'POSTMARKED: SOUTH EXTENSION • CONFIDENTIAL',
-      signature: '— Always your brother, Kabir',
-      songs: [
-        { spotifyUrl: 'https://open.spotify.com/track/2T0B8Y2YxjD7VvNn0Q0w1J', whyThisSong: 'It sounds like the quiet courage you carry.' },
-        { spotifyUrl: 'https://open.spotify.com/track/5Jk5F6i8W9f4M6xX7l9Kky', whyThisSong: 'This is what we played on the night the world got too heavy.' }
-      ],
-      photos: [
-        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1521119989659-a83eee488004?auto=format&fit=crop&w=1200&q=80'
-      ],
-      photoStory: 'Library corridors and bad decisions that turned into good stories.',
-      birthdayMessage: 'Didi, you taught me that staying gentle is the hardest kind of courage. Thank you for showing up every single time.',
-      mostLikelyTo: 'Defend someone she barely knows in a public dispute because she saw an injustice.',
-      oneThingOnlyRezaDoes: 'Draws a tiny smiley face in the dot of every question mark.',
-      somethingAboutReza: 'The road trip where the tire burst and she insisted on learning how to change it herself.',
-      anythingElse: 'Refuses to let anyone sit alone in a room where music is playing.'
-    },
-    'RZ-003': {
-      folderTab: 'RZ-003 // ARCHIVE DOSSIER',
-      catalogStamp: 'RZ-003 • FOLIO • 33⅓',
-      name: 'Meher Kaur',
-      nickname: 'Reeza',
-      relation: 'University Roommate • 2017–2024',
-      tenure: '7 Years of Shared Monsoons',
-      words: ['SOFT', 'SHARP', 'HOME'],
-      primaryPhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80',
-      primaryCaption: '“Hostel balcony, 3 AM chai before the political science final.”',
-      secondaryPhoto: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
-      secondaryCaption: '“The kitchen table where every argument resolved itself.”',
-      plateRef: 'PLATE I • NEG. 28',
-      soundtrackHeader: 'THEIR SOUNDTRACK // THE REZA EP',
-      tracks: [
-        { cut: 'CUT 01', track: 'Channa Mereya', movie: 'AE DIL HAI MUSHKIL • 2016', time: '4:49', sideTrack: 'SIDE A • TRACK 01' },
-        { cut: 'CUT 02', track: 'Zinda', movie: 'LOOTERA • 2013', time: '4:01', sideTrack: 'SIDE A • TRACK 08' }
-      ],
-      whyHand: 'in Meher’s hand',
-      whyText: '“Side A is what she sounds like to everyone else — the big beautiful one, the one people sing at her. The order is the argument. You cannot listen to this record without understanding how much room she makes for everyone else in the room.”',
-      dispatchRef: 'DISPATCH REF: MK-72',
-      memoryText: '“I sat in the corridor outside her room for thirty-eight days and she never once asked me what I was doing there. She just opened the door every few hours and left a glass of water outside for me without saying a word, and then closed it again. That is the entire friendship.”',
-      memoryLoc: 'Location: Third floor north wing, St. Stephen’s',
-      storyText: '“There are people who fill a room by taking up all the sound in it, and then there is Reza, who fills a room by quietly adjusting the lighting so everyone looks kinder. On the worst Tuesday of our third year, she didn’t ask what had happened. She just walked four miles in Delhi heat to bring back two cups of bad sweet tea in paper cups.”',
-      likely: 'Stay up until 4:30 AM to make sure everyone got an Uber home safely, even on a Tuesday.',
-      only: 'Folds receipt corners into precise right triangles before dropping them into her canvas tote bag.',
-      remember: 'The monsoon evening she brought four warm samosas wrapped in the Hindi Times during exams.',
-      other: 'Her laugh starts in her shoulders before it ever makes a sound.',
-      messageText: '“Reeza, you are home to so many of us. I hope this year you let people hold the umbrella for you for once. Happy Birthday.”',
-      postmark: 'POSTMARKED: ST. STEPHEN’S ARCHIVE • NEW DELHI',
-      signature: '— With all my love, Meher',
-      songs: [
-        { spotifyUrl: 'https://open.spotify.com/track/0L3tDjdg2rR9P7WgGZur7i', whyThisSong: 'This is the song that feels like a room full of people loving her at once.' },
-        { spotifyUrl: 'https://open.spotify.com/track/5aVtuywsgTQZwJt6LhO9Nt', whyThisSong: 'It feels like a steady hand on your shoulder when life gets loud.' }
-      ],
-      photos: [
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80'
-      ],
-      photoStory: 'Hostel balcony mornings and the kind of chaos that turned into belonging.',
-      birthdayMessage: 'Reeza, you are home to so many of us. I hope this year you let people hold the umbrella for you for once.',
-      mostLikelyTo: 'Stay up until 4:30 AM to make sure everyone got an Uber home safely, even on a Tuesday.',
-      oneThingOnlyRezaDoes: 'Folds receipt corners into precise right triangles before dropping them into her canvas tote bag.',
-      somethingAboutReza: 'The monsoon evening she brought four warm samosas wrapped in the Hindi Times during exams.',
-      anythingElse: 'Her laugh starts in her shoulders before it ever makes a sound.'
-    },
-    'RZ-004': {
-      folderTab: 'RZ-004 // ARCHIVE DOSSIER',
-      catalogStamp: 'RZ-004 • DUAL SINGLE',
-      name: 'Samar & Tanya',
-      nickname: 'Captain Reza',
-      relation: 'Dinner Crew & Co-Conspirators',
-      tenure: '5 Years of Sunday Dinners',
-      words: ['WARMTH', 'FEAST', 'SHELTER'],
-      primaryPhoto: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
-      primaryCaption: '“Sunday cooking marathon, garlic on everyone’s fingers.”',
-      secondaryPhoto: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80',
-      secondaryCaption: '“The dining room table after dessert.”',
-      plateRef: 'PLATE III • NEG. 55',
-      soundtrackHeader: 'THEIR SOUNDTRACK // DUAL SINGLE',
-      tracks: [
-        { cut: 'CUT 01', track: 'Gallan Goodiyan', movie: 'DIL DHADAKNE DO • 2015', time: '4:56', sideTrack: 'SIDE A • TRACK 03' },
-        { cut: 'CUT 02', track: 'Roobaroo', movie: 'RANG DE BASANTI • 2006', time: '4:42', sideTrack: 'SIDE A • TRACK 17' }
-      ],
-      whyHand: 'in Samar & Tanya’s hand',
-      whyText: '“Every single kitchen dance at midnight always ends with Gallan Goodiyan. Reza wields the big metal ladle like a conductor baton and refuses to let anyone do the dishes alone.”',
-      dispatchRef: 'DISPATCH REF: ST-08',
-      memoryText: '“The night the lights went out in the colony during the Diwali dinner, Reza didn’t panic. She found thirteen mismatched candles, set up an improvised buffet on the floor, and declared it the finest dining room in the city.”',
-      memoryLoc: 'Location: Hauz Khas Kitchen',
-      storyText: '“To have Reza at your table is to know that no matter what went wrong during the week, Sunday dinner is sacred ground. She will remember how much pepper you like in your soup three years after you mentioned it once in passing.”',
-      likely: 'Sneak away to do everyone else’s dishes while people are having coffee in the other room.',
-      only: 'Will taste gravy five times and still claim it needs a pinch more cumin.',
-      remember: 'The dinner where we stayed singing until the milkman knocked on the gate.',
-      other: 'Hugs with both arms and holds on two seconds longer than anyone else.',
-      messageText: '“Captain, may your table always be overflowing with laughter, deep conversations, and second helpings. Happy Birthday.”',
-      postmark: 'POSTMARKED: HAUZ KHAS • HEIRLOOM KITCHEN',
-      signature: '— Samar & Tanya',
-      songs: [
-        { spotifyUrl: 'https://open.spotify.com/track/3Xg8oJ7nmoe3i4oVt60ooa', whyThisSong: 'This one belongs to Sunday dinners and kitchen dance breaks.' },
-        { spotifyUrl: 'https://open.spotify.com/track/4XfH8iQ2KZ89aC8X7dE1wP', whyThisSong: 'A song for the many quiet ways she makes people feel at home.' }
-      ],
-      photos: [
-        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80'
-      ],
-      photoStory: 'Sunday dinners turned into sacred rituals with too much food and too much laughter.',
-      birthdayMessage: 'Captain, may your table always be overflowing with laughter, deep conversations, and second helpings.',
-      mostLikelyTo: 'Sneak away to do everyone else’s dishes while people are having coffee in the other room.',
-      oneThingOnlyRezaDoes: 'Will taste gravy five times and still claim it needs a pinch more cumin.',
-      somethingAboutReza: 'The dinner where we stayed singing until the milkman knocked on the gate.',
-      anythingElse: 'Hugs with both arms and holds on two seconds longer than anyone else.'
-    }
-  };
-
   const state = {
     contributors: [],
     unlocked: new Set(),
     activeSong: null
   };
+  try {
+    state.unlocked = new Set(JSON.parse(sessionStorage.getItem('archiveUnlockedContributors') || '[]'));
+  } catch (_) {
+    state.unlocked = new Set();
+  }
 
   ['side-a', 'side-b', 'dossier-modal', 'scrapbook', 'track-infinity'].forEach(id => {
     const section = document.getElementById(id);
@@ -1013,6 +839,41 @@
       }
     }
     return '';
+  }
+
+  const photoLoadCache = new Map();
+
+  function preloadPhoto(rawUrl) {
+    const url = normalizePhotoUrl(rawUrl);
+    if (!url) return Promise.resolve('');
+    if (!photoLoadCache.has(url)) {
+      photoLoadCache.set(url, new Promise(resolve => {
+        const image = new Image();
+        const timeout = setTimeout(() => resolve(''), 12000);
+        image.onload = () => { clearTimeout(timeout); resolve(url); };
+        image.onerror = () => { clearTimeout(timeout); resolve(''); };
+        image.src = url;
+      }));
+    }
+    return photoLoadCache.get(url);
+  }
+
+  function photoUrlsFromCell(value) {
+    const text = normalizeText(value);
+    if (!text) return [];
+    const candidates = text.match(/https?:\/\/[^\s<>"']+/gi) || [];
+    return candidates.map(url => normalizePhotoUrl(url.replace(/[),.;]+$/, ''))).filter(Boolean);
+  }
+
+  function stableContributorId(row, name) {
+    const timestamp = normalizeText(pickValue(row, ['Timestamp', 'Submitted at', 'Submission time']));
+    const identity = `${timestamp}\u0000${name.toLocaleLowerCase()}`;
+    let hash = 2166136261;
+    for (let index = 0; index < identity.length; index += 1) {
+      hash ^= identity.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `RZ-${(hash >>> 0).toString(36).toUpperCase()}`;
   }
 
   function parseCsv(csvText) {
@@ -1106,13 +967,14 @@
     ].map((song, idx) => ({
       spotifyUrl: normalizeText(song.spotifyUrl),
       whyThisSong: sentenceCase(song.whyThisSong),
+      title: sentenceCase(pickValue(row, [`Song ${idx + 1} title`, `Track ${idx + 1} title`])),
       trackNumber: idx + 1,
       contributorName: name
     })).filter(song => song.spotifyUrl);
 
     const photoEntries = Object.entries(row)
       .filter(([header]) => /^photo\s*\d+/i.test(header) || /^(photos?|image|uploaded photos)$/i.test(header.trim()) || /^📸\s*upload your photos/i.test(header.trim()))
-      .flatMap(([header, value]) => normalizeText(value).split(/[\n;,]+/).map(url => ({ header, url: normalizePhotoUrl(url) })))
+      .flatMap(([header, value]) => photoUrlsFromCell(value).map(url => ({ header, url })))
       .filter(photo => photo.url);
     const selectedCover = normalizeText(pickValue(row, ['Which photo should be the main album cover?']));
     const selectedCoverIndex = Number((selectedCover.match(/\d+/) || [])[0]) - 1;
@@ -1124,7 +986,7 @@
     const photoLinks = photoEntries.map(photo => photo.url).filter((photo, photoIndex, allPhotos) => allPhotos.indexOf(photo) === photoIndex);
 
     return {
-      id: `RZ-${String(index + 1).padStart(3, '0')}`,
+      id: stableContributorId(row, name),
       name,
       nickname,
       relationship,
@@ -1273,7 +1135,7 @@
         contributor,
         song,
         trackNumber: contributor.songs.length > 1 ? songIndex + 1 : 1,
-        title: `Track ${String(song.trackNumber || songIndex + 1).padStart(2, '0')}`,
+        title: song.title || 'UNTITLED CUT',
         artist: contributor.name,
         note: normalizeText(song.whyThisSong || ''),
         hand: `${contributor.name} • ${contributor.relationship || 'archive contribution'}`
@@ -1286,7 +1148,7 @@
     }
 
     container.innerHTML = tracks.map((entry, index) => {
-      const title = `Track ${String(index + 1).padStart(2, '0')}`;
+      const title = entry.song.title || 'UNTITLED CUT';
       const label = `CUT ${String(index + 1).padStart(2, '0')}`;
       return `
         <div class="track-slip cursor-pointer p-3 sm:p-3.5 border-l-4 border-l-oxblood border-y border-r border-[#D8C9B0] paper-edge-shadow bg-manila-card hover:bg-[#FAF3E4] transition-all duration-200" data-track="${escapeHtml(title)}" data-spotify-url="${escapeHtml(entry.song.spotifyUrl)}" data-artist="${escapeHtml(entry.artist)}" data-tracknum="${String(index + 1).padStart(2, '0')}" data-note="${escapeHtml(entry.note)}" data-hand="${escapeHtml(entry.hand)}">
@@ -1294,8 +1156,8 @@
             <div class="flex items-start gap-3 min-w-0">
               <span class="font-mono text-[9px] uppercase tracking-[0.22em] text-oxblood font-bold min-w-[42px] mt-0.5">${label}</span>
               <div class="min-w-0">
-                <h3 class="font-serif text-lg sm:text-xl text-ink-black leading-tight tracking-[-0.02em] truncate">${escapeHtml(entry.artist)}</h3>
-                <p class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#796A5D] mt-0.5">${escapeHtml(title)}</p>
+                <h3 class="font-serif text-lg sm:text-xl text-ink-black leading-tight tracking-[-0.02em] truncate">${escapeHtml(title)}</h3>
+                <p class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#796A5D] mt-0.5">${escapeHtml(entry.artist)} · TRACK ${String(index + 1).padStart(2, '0')}</p>
               </div>
             </div>
             <span class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#7E685C] whitespace-nowrap">${String(index + 1).padStart(2, '0')}</span>
@@ -1376,7 +1238,7 @@
     const photoStoryContainer = document.getElementById('modal-photostory-container');
     const photoStoryText = document.getElementById('modal-photostory-text');
     const photoSection = document.getElementById('dossier-photo-section');
-    if (plateEl) plateEl.textContent = photos.length ? `${photos.length} PHOTOGRAPH${photos.length === 1 ? '' : 'S'} FILED` : 'NO PHOTOGRAPHS FILED';
+    if (plateEl) plateEl.textContent = photos.length ? `${photos.length} PHOTOGRAPH${photos.length === 1 ? '' : 'S'} FILED` : '';
     if (photoSection) photoSection.hidden = photos.length === 0 && !data.photoStory;
     if (photoStoryText) photoStoryText.textContent = data.photoStory;
     if (photoStoryContainer) photoStoryContainer.hidden = !data.photoStory;
@@ -1386,12 +1248,12 @@
         <figure class="bg-[#FFFDF8] p-3.5 pb-5 border border-[#DFCDB2] paper-edge-shadow relative ${index % 2 ? 'rotate-1' : '-rotate-1'}">
           <div class="tape-strip absolute -top-3 left-8 w-20 h-5 -rotate-2 pointer-events-none"></div>
           <img alt="Submitted archive photograph ${index + 1}" class="block max-w-full max-h-[520px] w-auto h-auto mx-auto filter sepia brightness-95" src="${escapeHtml(photo)}">
-        </figure>`).join('') : (data.photoStory ? `<p class="font-script text-base text-ink-black text-center leading-snug">${escapeHtml(data.photoStory)}</p>` : '');
+        </figure>`).join('') : '';
       gallery.querySelectorAll('img').forEach(image => image.addEventListener('error', () => {
         image.closest('figure')?.remove();
-        if (!gallery.querySelector('img') && !data.photoStory) {
-          gallery.innerHTML = '<p class="font-mono text-[9px] uppercase tracking-widest text-ink-faint">PHOTOGRAPHS NOT ACCESSIBLE</p>';
-        }
+        const loadedCount = gallery.querySelectorAll('img').length;
+        if (plateEl) plateEl.textContent = loadedCount ? `${loadedCount} PHOTOGRAPH${loadedCount === 1 ? '' : 'S'} FILED` : '';
+        if (photoSection) photoSection.hidden = loadedCount === 0 && !data.photoStory;
       }, { once: true }));
     }
 
@@ -1506,6 +1368,7 @@
       }
       if (typed === compareName) {
         state.unlocked.add(contributor.id);
+        sessionStorage.setItem('archiveUnlockedContributors', JSON.stringify([...state.unlocked]));
         closeGate();
         applyDossierFields(contributor);
         if (modal) modal.classList.remove('hidden');
@@ -1518,7 +1381,13 @@
       input.focus();
     });
 
-    if (cancel) cancel.addEventListener('click', closeGate);
+    if (cancel) cancel.addEventListener('click', () => {
+      closeGate();
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    });
     input.focus();
   }
 
@@ -1550,76 +1419,92 @@
   function bindStaticDocumentEvents() {
     const shelf = document.getElementById('vinyl-shelf-scroll');
     let pointer = null;
-    let suppressClick = false;
+    let suppressNextClick = false;
     const movementThreshold = 8;
     if (shelf && !shelf.dataset.archiveInteractionBound) {
       shelf.dataset.archiveInteractionBound = 'true';
-
+      const updateShelfFocus = () => {
+        const cards = shelf.querySelectorAll('.contributor-card');
+        const center = shelf.getBoundingClientRect().left + shelf.clientWidth / 2;
+        cards.forEach(card => {
+          const rect = card.getBoundingClientRect();
+          const distance = Math.abs((rect.left + rect.width / 2) - center) / Math.max(1, shelf.clientWidth / 2);
+          card.style.setProperty('--shelf-focus-scale', (1.018 - Math.min(1, distance) * 0.025).toFixed(3));
+        });
+      };
+      shelf.addEventListener('scroll', () => requestAnimationFrame(updateShelfFocus), { passive: true });
+      window.addEventListener('resize', updateShelfFocus, { passive: true });
+      requestAnimationFrame(updateShelfFocus);
       shelf.addEventListener('pointerdown', event => {
-        if (event.button !== 0 || !event.target.closest('.contributor-card')) return;
+        if (event.button !== 0) return;
+        suppressNextClick = false;
         pointer = {
           id: event.pointerId,
           x: event.clientX,
           y: event.clientY,
           scrollLeft: shelf.scrollLeft,
           dragging: false,
-          pointerType: event.pointerType
+          pointerType: event.pointerType,
+          lastX: event.clientX,
+          lastTime: performance.now(),
+          velocityX: 0
         };
+        shelf.style.scrollBehavior = 'auto';
       });
-
       window.addEventListener('pointermove', event => {
         if (!pointer || pointer.id !== event.pointerId) return;
         const dx = event.clientX - pointer.x;
         const dy = event.clientY - pointer.y;
         if (!pointer.dragging && Math.hypot(dx, dy) >= movementThreshold) {
           pointer.dragging = true;
-          suppressClick = true;
           shelf.classList.add('cursor-grabbing');
         }
         if (pointer.dragging && pointer.pointerType === 'mouse') {
           shelf.scrollLeft = pointer.scrollLeft - dx;
+          const now = performance.now();
+          const elapsed = Math.max(1, now - pointer.lastTime);
+          pointer.velocityX = (event.clientX - pointer.lastX) / elapsed;
+          pointer.lastX = event.clientX;
+          pointer.lastTime = now;
           event.preventDefault();
         }
       });
-
       const finishPointer = event => {
         if (!pointer || pointer.id !== event.pointerId) return;
-        if (pointer.dragging) {
-          suppressClick = true;
-          setTimeout(() => { suppressClick = false; }, 500);
+        const finished = pointer;
+        if (finished.dragging) {
+          suppressNextClick = event.type === 'pointerup';
+          if (finished.pointerType === 'mouse' && Math.abs(finished.velocityX) > 0.18) {
+            shelf.scrollTo({ left: shelf.scrollLeft - finished.velocityX * 115, behavior: 'smooth' });
+          }
         }
         pointer = null;
+        shelf.style.scrollBehavior = '';
         shelf.classList.remove('cursor-grabbing');
       };
       window.addEventListener('pointerup', finishPointer);
       window.addEventListener('pointercancel', finishPointer);
-      shelf.addEventListener('wheel', event => {
-        if (shelf.scrollWidth <= shelf.clientWidth) return;
-        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
-          shelf.scrollLeft += event.deltaY;
-          event.preventDefault();
-        }
-      }, { passive: false });
-    }
-    if (shelf) shelf.querySelectorAll('.contributor-card').forEach(card => {
-      if (card.dataset.dossierBound) return;
-      card.dataset.dossierBound = 'true';
-      card.addEventListener('click', event => {
-        if (suppressClick) {
+      shelf.addEventListener('click', event => {
+        const card = event.target.closest('.contributor-card');
+        if (!card || !shelf.contains(card)) return;
+        if (suppressNextClick) {
+          suppressNextClick = false;
           event.preventDefault();
           event.stopImmediatePropagation();
-          suppressClick = false;
           return;
         }
         const id = card.dataset.contributorId;
         const contributor = state.contributors.find(item => item.id === id);
-        if (window.__archiveDebug) {
-          console.debug('[ARCHIVE CLICK]', { recordId: id, resolvedContributor: contributor?.name || null });
-        }
         if (contributor) openDossierFor(id);
       });
-    });
-
+      shelf.addEventListener('wheel', event => {
+        if (shelf.scrollWidth <= shelf.clientWidth) return;
+        if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+          shelf.scrollBy({ left: event.deltaY, behavior: 'smooth' });
+          event.preventDefault();
+        }
+      }, { passive: false });
+    }
     document.querySelectorAll('.track-slip').forEach(slip => slip.addEventListener('click', () => selectTrack(slip, slip)));
   }
 
@@ -1742,100 +1627,135 @@
     });
   }
 
-  function renderScrapbook() {
+  async function renderScrapbook() {
     const canvas = document.getElementById('scrapbook-canvas');
     if (!canvas) return;
-    const grid = canvas.querySelector('.relative.z-10.grid');
-    if (!grid) return;
+    canvas.replaceChildren();
+    const grid = document.createElement('div');
+    grid.className = 'relative z-10 grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5 items-start content-start scrapbook-state-content';
+    grid.style.minHeight = '620px';
+    canvas.append(grid);
     const badge = document.getElementById('scrapbook-category-badge');
-    const states = [];
-    const addState = (key, label, items, quiz = null) => {
-      if (items.some(item => !item.value && !item.photo)) return;
-      states.push({ key, label, items, quiz });
+    if (badge) badge.style.opacity = '1';
+    const shuffle = values => {
+      const result = [...values];
+      for (let i = result.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [result[i], result[j]] = [result[j], result[i]]; }
+      return result;
     };
-    const littleThings = state.contributors.flatMap(contributor => [
-      ['MOST LIKELY TO', contributor.mostLikelyTo],
-      ['ONE THING ONLY REZA DOES', contributor.oneThingOnlyRezaDoes],
-      ['SOMETHING THEY REMEMBER', contributor.somethingAboutReza]
-    ].filter(([, value]) => normalizeText(value)).map(([label, value]) => ({ contributor, label, value })));
-    const shuffle = values => [...values].sort(() => Math.random() - 0.5);
-
-    if (littleThings.length) {
-      const selected = shuffle(littleThings).slice(0, Math.min(3, littleThings.length));
-      addState('little-things', 'THE LITTLE THINGS', selected.map(item => ({ label: item.label, value: item.value, name: item.contributor.name })));
+    const text = value => normalizeText(value);
+    const excerpt = value => {
+      const full = text(value);
+      if (full.length <= 185) return { value: full };
+      const boundary = full.slice(0, 165).lastIndexOf(' ');
+      return { value: `${full.slice(0, boundary > 95 ? boundary : 165).replace(/[ ,;:—-]+$/, '')}…`, full };
+    };
+    // Load at most one valid candidate per contributor through the dossier photo pipeline.
+    const loadedPhotos = new Map(await Promise.all(state.contributors.map(async contributor => {
+      for (const candidate of contributor.photos || []) {
+        const loaded = await preloadPhoto(normalizePhotoUrl(candidate));
+        if (loaded) return [contributor.id, [loaded]];
+      }
+      return [contributor.id, []];
+    })));
+    const real = state.contributors.filter(person => text(person.name));
+    const pool = fields => shuffle(real.flatMap(person => fields.map(([label, field]) => {
+      const value = text(person[field]);
+      return value && !/^[-–—]+$/.test(value) ? { label, ...excerpt(value), name: person.name, sourceId: person.id } : null;
+    }).filter(Boolean)));
+    const photoPool = shuffle(real.flatMap(person => (loadedPhotos.get(person.id) || []).map((url, index) => ({
+      label: 'PHOTOGRAPH', photo: url, name: person.name, sourceId: person.id, photoIndex: index
+    }))));
+    const photoStoryPool = pool([['PHOTO STORY', 'photoStory']]);
+    const memories = pool([['MEMORY', 'memory']]);
+    const little = pool([['MOST LIKELY TO', 'mostLikelyTo'], ['ONE THING ONLY REZA DOES', 'oneThingOnlyRezaDoes'], ['SOMETHING THEY REMEMBER', 'somethingAboutReza']]);
+    const stories = pool([['A STORY WORTH KEEPING', 'story']]);
+    const messages = pool([['BIRTHDAY MESSAGE', 'birthdayMessage'], ['ANYTHING ELSE', 'anythingElse']]);
+    const pick = (items, count, exclude = new Set()) => shuffle(items.filter(item => !exclude.has(item.sourceId))).slice(0, count);
+    const groups = [];
+    const add = (key, label, make, min = 3) => {
+      if (make().length >= min) groups.push({ key, label, make });
+    };
+    add('photograph-memory', 'PHOTO WALL • MEMORY TABLE', () => [
+      ...pick(photoPool, 2), ...pick(memories, 1), ...pick(photoStoryPool, 1), ...pick(little, 1), ...pick(messages, 1).map(item => ({ ...item, small: true }))
+    ], 3);
+    add('little-things', 'THE LITTLE THINGS', () => [
+      ...pick(little, 3), ...pick(photoPool, 1), ...pick(memories, 1), ...pick(messages, 1).map(item => ({ ...item, small: true }))
+    ], 3);
+    add('story', 'A STORY WORTH KEEPING', () => [
+      ...pick(stories, 1).map(item => ({ ...item, featured: true })), ...pick(photoPool, 2), ...pick(photoStoryPool, 1), ...pick(memories, 1), ...pick(little, 1)
+    ], 3);
+    add('message-drawer', 'THE MESSAGE DRAWER', () => [
+      ...pick(messages, 2).map(item => ({ ...item, folded: true })), ...pick(photoPool, 2), ...pick(little, 1), ...pick(memories, 1)
+    ], 3);
+    const quizSources = [...memories, ...messages];
+    if (quizSources.length && real.length > 1) add('who-said-this', 'WHO SAID THIS?', () => {
+      const source = shuffle(quizSources)[0];
+      const correct = real.find(person => person.id === source.sourceId);
+      if (!correct) return [];
+      const choices = shuffle([correct, ...shuffle(real.filter(person => person.id !== correct.id)).slice(0, Math.min(3, real.length - 1))]);
+      const excluded = new Set([source.sourceId]);
+      return [
+        { ...source, name: '', hideName: true, quiz: { answerId: correct.id, choices } },
+        ...pick(photoPool, 1, excluded), ...pick(little, 1, excluded),
+        ...pick(messages, 1, excluded).map(item => ({ ...item, small: true })),
+        ...pick(memories, 1, excluded), ...pick(photoStoryPool, 1, excluded)
+      ];
+    }, 5);
+    add('mixed-archive', 'MIXED ARCHIVE • TABLE NO. 06', () => [
+      ...pick(photoPool, 2), ...pick(memories, 1), ...pick(little, 1), ...pick(stories, 1), ...pick(messages, 1).map(item => ({ ...item, small: true })), ...pick(photoStoryPool, 1)
+    ], 4);
+    if (!groups.length) {
+      grid.innerHTML = '<p class="font-mono text-[10px] uppercase tracking-widest text-ink-faint">NO EPHEMERA FILED</p>';
+      return;
     }
-    state.contributors.forEach(contributor => {
-      if (contributor.story) addState(`story:${contributor.id}`, 'A STORY WORTH KEEPING', [{ label: 'A STORY WORTH KEEPING', value: contributor.story, name: contributor.name }]);
-      if (contributor.somethingAboutReza) addState(`remembered:${contributor.id}`, 'SOMETHING YOU REMEMBER', [{ label: 'SOMETHING THEY REMEMBER', value: contributor.somethingAboutReza, name: contributor.name }]);
-      if (contributor.anythingElse || contributor.birthdayMessage) {
-        addState(`one-more:${contributor.id}`, 'ONE MORE THING', [{
-          label: contributor.anythingElse ? 'ANYTHING ELSE' : 'A MESSAGE FOR REZA',
-          value: contributor.anythingElse || contributor.birthdayMessage,
-          name: contributor.name
-        }]);
-      }
-      if (contributor.birthdayMessage && state.contributors.length >= 2) {
-        const choices = shuffle(state.contributors.filter(item => item.id !== contributor.id)).slice(0, 2);
-        addState(`who-said:${contributor.id}`, 'WHO SAID THIS?', [{
-          label: 'A MESSAGE FOR REZA',
-          value: contributor.birthdayMessage.length > 180 ? `${contributor.birthdayMessage.slice(0, 177).trimEnd()}...` : contributor.birthdayMessage,
-          name: contributor.name
-        }], { answerId: contributor.id, choices: shuffle([contributor, ...choices]) });
-      }
-    });
-
     let currentState = null;
     let rotationTimer = null;
     let interactionUntil = 0;
-    const previousKey = sessionStorage.getItem('archiveScrapbookState');
+    let previousGroupKey = sessionStorage.getItem('archiveScrapbookState');
+    let previousSignature = sessionStorage.getItem('archiveScrapbookVariant');
     const chooseState = () => {
-      if (!states.length) return null;
-      const options = states.length > 1 ? states.filter(item => item.key !== currentState?.key && item.key !== previousKey) : states;
-      return (options.length ? options : states)[Math.floor(Math.random() * (options.length || states.length))];
-    };
-    const renderState = nextState => {
-      currentState = nextState;
-      if (!nextState) {
-        grid.innerHTML = '<p class="font-mono text-[10px] uppercase tracking-widest text-ink-faint md:col-span-12">NO EPHEMERA FILED</p>';
-        return;
+      let options = groups.filter(group => group.key !== currentState?.key && group.key !== previousGroupKey);
+      if (!options.length) options = groups.filter(group => group.key !== currentState?.key);
+      if (!options.length) options = groups;
+      const group = shuffle(options)[0];
+      let items = shuffle(group.make());
+      let signature = `${group.key}:${items.map(item => item.sourceId || item.photo).join('|')}`;
+      let attempts = 0;
+      while (signature === previousSignature && attempts++ < 5) {
+        items = shuffle(group.make());
+        signature = `${group.key}:${items.map(item => item.sourceId || item.photo).join('|')}`;
       }
-      sessionStorage.setItem('archiveScrapbookState', nextState.key);
-      if (badge) badge.textContent = `ARCHIVAL EPHEMERA • ${nextState.label}`;
-      grid.classList.add('scrapbook-state-content', 'opacity-0');
-      const columns = [[], [], []];
-      nextState.items.forEach((item, index) => columns[index % 3].push({ ...item, index }));
-      const photoMarkup = photo => `<img class="scrapbook-submitted-photo block max-w-full max-h-[280px] w-auto h-auto mx-auto" src="${escapeHtml(photo)}" alt="Submitted photo from ${escapeHtml(nextState.items[0].name || 'contributor')}">`;
-      grid.innerHTML = columns.map(column => `
-        <div class="md:col-span-4 flex flex-col gap-6 items-center">
-          ${column.map(item => `
-            <article class="scrapbook-item relative w-full max-w-[340px] bg-[#FFFDF8] p-4 border border-[#DECDBD] paper-edge-shadow ${item.index % 2 ? 'rotate-1' : '-rotate-1'}" data-scrap-index="${item.index}">
-              <div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>
-              <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-1">${escapeHtml(item.label)}</div>
-              ${item.photo ? photoMarkup(item.photo) : `<p class="font-serif text-sm text-ink-black leading-snug">${escapeHtml(item.value)}</p>`}
-              ${item.name ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2">${escapeHtml(item.name)}</div>` : ''}
-              ${nextState.quiz && item.index === 0 ? `<div class="flex flex-wrap gap-1.5 justify-center mt-3">${nextState.quiz.choices.map(choice => `<button class="scrapbook-answer px-2 py-1 border border-[#BAA68B] bg-[#FAF5EB] font-mono text-[8px] uppercase" data-choice-id="${escapeHtml(choice.id)}">${escapeHtml(choice.name)}</button>`).join('')}</div><p class="scrapbook-feedback hidden font-mono text-[8px] uppercase text-center mt-2"></p>` : ''}
-            </article>`).join('')}
-        </div>`).join('');
+      return { group, items, signature, label: group.label };
+    };
+    const renderState = next => {
+      currentState = next;
+      if (!next) return;
+      sessionStorage.setItem('archiveScrapbookState', next.group.key);
+      sessionStorage.setItem('archiveScrapbookVariant', next.signature);
+      previousGroupKey = next.group.key;
+      previousSignature = next.signature;
+      if (badge) badge.textContent = `ARCHIVAL EPHEMERA • ${next.label}`;
+      grid.classList.add('opacity-0');
+      const positions = ['rotate-[-2deg] translate-y-1', 'rotate-[1.5deg] -translate-y-2', 'rotate-[-1deg] translate-y-3', 'rotate-[2deg]', '-rotate-1 -translate-y-1', 'rotate-1 translate-y-2', '-rotate-2'];
+      grid.innerHTML = next.items.map((item, index) => {
+        const classes = item.photo ? 'bg-[#F8F2E8] p-2 pb-4' : item.featured ? 'bg-[#FFFDF8] p-5 sm:p-6 min-h-[215px]' : item.folded ? 'bg-[#F6EAD8] p-4 min-h-[110px]' : item.small ? 'bg-[#F7EFD9] p-3' : 'bg-[#FFFDF8] p-4';
+        const photoHeight = ['h-[118px] sm:h-[132px]', 'h-[145px] sm:h-[160px]', 'h-[170px] sm:h-[185px]'][Math.floor(Math.random() * 3)];
+        const content = item.photo
+          ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" src="${escapeHtml(item.photo)}" alt="Submitted photograph from ${escapeHtml(item.name)}">`
+          : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(item.value)}</p>${item.full ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(item.full)}</p>` : ''}`;
+        return `<article class="scrapbook-item relative w-full max-w-[360px] mx-auto border border-[#DECDBD] paper-edge-shadow ${classes} ${positions[index % positions.length]} transition-transform duration-300 ${item.featured ? 'sm:col-span-2 lg:col-span-2' : ''}" data-scrap-index="${index}" style="z-index:${10 + index}">
+          ${item.folded ? '<div class="absolute top-0 right-0 w-4 h-4 bg-[#E1CEB4] border-l border-b border-[#DECDBD] shadow-sm pointer-events-none"></div>' : item.photo ? '<div class="absolute top-0 left-5 right-5 h-1 border-x border-[#DECDBD]"></div>' : '<div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>'}
+          <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-2">${escapeHtml(item.label)}</div>${content}
+          ${item.name && !item.hideName ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2">${escapeHtml(item.name)}</div>` : ''}
+          ${item.quiz ? `<div class="flex flex-wrap gap-1.5 mt-3">${item.quiz.choices.map(person => `<button class="scrapbook-answer px-2 py-1 border border-[#BAA68B] bg-[#FAF5EB] font-mono text-[8px] uppercase" data-choice-id="${escapeHtml(person.id)}">${escapeHtml(person.name)}</button>`).join('')}</div><p class="scrapbook-feedback hidden font-mono text-[8px] uppercase mt-2"></p>` : ''}
+        </article>`;
+      }).join('');
       requestAnimationFrame(() => grid.classList.remove('opacity-0'));
-      grid.querySelectorAll('.scrapbook-submitted-photo').forEach(image => image.addEventListener('error', () => {
-        image.closest('article')?.remove();
-        const failedUrl = new URL(image.getAttribute('src'), location.href).href;
-        if (currentState?.items.some(item => item.photo && new URL(item.photo, location.href).href === failedUrl)) {
-          const stateIndex = states.findIndex(item => item.key === currentState.key);
-          if (stateIndex >= 0) states.splice(stateIndex, 1);
-          currentState = null;
-          renderState(chooseState());
-        }
-      }, { once: true }));
+      grid.querySelectorAll('.scrapbook-submitted-photo').forEach(image => image.addEventListener('error', () => image.closest('article')?.remove(), { once: true }));
     };
-
     const rotate = () => {
-      if (Date.now() < interactionUntil || canvas.matches(':hover') || canvas.contains(document.activeElement)) {
-        rotationTimer = setTimeout(rotate, 2000);
-        return;
-      }
-      const next = chooseState();
-      if (next) renderState(next);
+      if (Date.now() < interactionUntil || canvas.matches(':hover') || canvas.contains(document.activeElement)) { rotationTimer = setTimeout(rotate, 2000); return; }
+      renderState(chooseState());
       rotationTimer = setTimeout(rotate, 60000 + Math.random() * 30000);
     };
     renderState(chooseState());
@@ -1845,31 +1765,23 @@
     canvas.addEventListener('focusin', () => { interactionUntil = Date.now() + 3000; });
     canvas.addEventListener('click', event => {
       interactionUntil = Date.now() + 3000;
+      const reveal = event.target.closest('.scrapbook-reveal');
+      if (reveal) {
+        const full = reveal.nextElementSibling;
+        const expanded = reveal.getAttribute('aria-expanded') === 'true';
+        reveal.setAttribute('aria-expanded', String(!expanded));
+        reveal.textContent = expanded ? 'Read full note' : 'Show excerpt';
+        full?.classList.toggle('hidden', expanded);
+        return;
+      }
       const answer = event.target.closest('.scrapbook-answer');
-      if (answer && currentState?.quiz) {
+      if (answer && currentState) {
         const feedback = answer.closest('article')?.querySelector('.scrapbook-feedback');
-        if (feedback) {
-          feedback.textContent = answer.dataset.choiceId === currentState.quiz.answerId ? 'CORRECT' : 'NOT QUITE';
-          feedback.classList.remove('hidden');
-        }
+        if (feedback) { feedback.textContent = answer.dataset.choiceId === currentState.items.find(item => item.quiz)?.quiz.answerId ? 'CORRECT' : 'NOT QUITE'; feedback.classList.remove('hidden'); }
         return;
       }
       const item = event.target.closest('[data-scrap-index]');
       if (item) item.classList.toggle('rotate-0');
-    });
-
-    state.contributors.forEach(contributor => {
-      if ((!contributor.memory && !contributor.story) || !contributor.photos.length) return;
-      const photo = contributor.photos[0];
-      const image = new Image();
-      image.onload = () => {
-        const storyItem = contributor.memory
-          ? [{ label: 'FROM THE ARCHIVE', value: contributor.memory, name: contributor.name }, { label: 'PHOTOGRAPH', photo, name: contributor.name }]
-          : [{ label: 'A STORY WORTH KEEPING', value: contributor.story, name: contributor.name }, { label: 'PHOTOGRAPH', photo, name: contributor.name }];
-        addState(`photo-story:${contributor.id}`, contributor.memory ? 'PHOTOGRAPH + MEMORY' : 'STORY + PHOTOGRAPH', storyItem);
-      };
-      image.onerror = () => {};
-      image.src = photo;
     });
   }
 
@@ -1887,266 +1799,8 @@
     <p class="font-script text-xl sm:text-2xl text-ink-dim mt-1.5">the bits that never made it into the official record</p>
   </div>
 
-  <div class="relative bg-manila-card p-6 sm:p-10 border-2 border-[#D8C9B0] paper-edge-shadow overflow-hidden min-h-[780px] sm:min-h-[720px] select-none" id="scrapbook-canvas">
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,#E3D3BD_1px,transparent_1px),linear-gradient(to_bottom,#E3D3BD_1px,transparent_1px)] bg-[size:32px_32px] opacity-40 pointer-events-none" style="transform: translate3d(0px, 0px, 0px);"></div>
-    <div class="absolute top-4 left-6 font-mono text-[8px] uppercase tracking-[0.25em] text-[#8C7665]/60 pointer-events-none hidden sm:block">DEPOSIT TABLE • EPHEMERA DRAWER 04</div>
-    <div class="absolute top-4 right-6 font-mono text-[8px] uppercase tracking-[0.25em] text-[#8C7665]/60 pointer-events-none hidden sm:block">CLICK ITEMS TO UNFOLD, LIFT &amp; REVEAL</div>
+  <div class="relative bg-manila-card p-6 sm:p-10 border-2 border-[#D8C9B0] paper-edge-shadow overflow-hidden min-h-[780px] sm:min-h-[720px] select-none" id="scrapbook-canvas"></div>
 
-    <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-start my-auto pt-4">
-      <!-- COLUMN 1: Liftable Maine Photo & Reggio Receipt -->
-      <div class="md:col-span-4 flex flex-col gap-6">
-        <!-- Liftable Photo Frame -->
-        <div class="relative group cursor-pointer" id="lifting-photo-container">
-          <!-- Hidden Note Underneath Photo -->
-          <div class="absolute inset-0 bg-[#F5EDE0] p-4 border border-[#BAA68B] paper-edge-shadow rounded-xs flex flex-col justify-between z-0 rotate-[-1deg]">
-            <div class="flex items-center justify-between border-b border-dashed border-[#DFCEB3] pb-1 font-mono text-[7.5px] uppercase text-oxblood font-bold tracking-wider">
-              <span class="">SECRET NOTE UNDER PHOTO</span>
-              <span class="material-symbols-outlined text-[12px]">visibility</span>
-            </div>
-            <p class="font-script text-base text-oxblood leading-snug py-2 px-1 text-center">
-              “Reza fell asleep 10 minutes in and Kabir drove in the wrong direction for 3 hours. Best afternoon of that autumn.”
-            </p>
-            <div class="border-t border-[#DFCEB3] pt-1 text-right font-mono text-[7px] text-ink-faint uppercase">
-              • UNRECORDED LOG •
-            </div>
-          </div>
-
-          <!-- Top Liftable Photo Card -->
-          <div class="relative bg-[#FFFDF8] p-3 pb-6 border border-[#E0D1B8] paper-edge-shadow transform -rotate-3 transition-all duration-500 z-10 origin-bottom-left" id="lifting-photo-frame">
-            <div class="tape-strip absolute -top-3 left-6 w-16 h-5 -rotate-2 pointer-events-none"></div>
-            <div class="w-full aspect-[4/3] bg-[#3B2C24] overflow-hidden mb-2.5 border border-[#8C7665]/40 relative">
-              <img alt="Maine road trip" class="w-full h-full object-cover filter sepia brightness-95" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7X2F5HitYGjkYi5rOpyeYGgDzA5cfSpnbLERfoKxz6ooOz0S1bNLJKizn0aon6IX2YEPwSwKmBvNH6cTY2154FeUtt6PQzrD12agMo9K_o9NfEUjHJGtor5VogHciEm-S5k-QMfYNjMaYAnncKnaBUza9-WAz9-2jJmfCPtijq5uBs2QGs5AI06nhXCA7y-OerKP5ugXm2UDXqqrJflGvU0el4fN7zL_GWTvYeRDTXJj3uUUqkalL">
-              <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/60 text-[#FAF5EB] font-mono text-[7px] uppercase tracking-wider rounded-xs flex items-center gap-1">
-                <span class="material-symbols-outlined text-[10px]">touch_app</span>
-                <span id="photo-lift-indicator" class="">LIFT TO PEEK</span>
-              </div>
-            </div>
-            <p class="font-script text-base text-ink-black text-center leading-snug">“accidental trip to Maine • Oct '21”</p>
-            <p class="font-mono text-[7.5px] uppercase tracking-widest text-ink-faint text-center mt-1">plate iv • neg. 18</p>
-          </div>
-        </div>
-
-        <!-- Reggio Receipt -->
-        <div class="scrapbook-item relative bg-[#F6EDE0] p-4 sm:p-5 border border-dashed border-[#B8A48B] paper-edge-shadow rotate-2 hover:rotate-0 hover:scale-105 transition-all duration-300 cursor-pointer" id="reggio-receipt" style="transform: translate3d(0px, 0px, 0px) rotate(4deg);"><div class="tape-strip absolute -top-2.5 right-6 w-14 h-4 rotate-3 pointer-events-none"></div><div class="text-center border-b border-dashed border-[#B8A48B] pb-1.5 mb-2.5"><span class="text-[7.5px] uppercase tracking-widest text-oxblood font-bold block">PRESERVED ARTIFACT</span><h4 class="font-mono text-xs text-ink-black font-semibold tracking-wider mt-0.5">RZ-FOLIO · ARCHIVE FRAGMENT</h4><span class="text-[7.5px] font-mono text-ink-faint uppercase tracking-wider">DEPOSIT SPECIMEN</span></div><div class="py-2.5 text-center font-mono text-[9px] text-ink-dim border-b border-[#DECDBD]"><p class="font-serif italic text-sm text-ink-black">[ Unfiled Ephemera Slip ]</p><p class="font-mono text-[8px] text-ink-faint mt-1.5 leading-snug">“Awaiting contributor documentation / Google Form deposit.”</p></div><p class="font-mono text-[7.5px] uppercase tracking-widest text-ink-faint mt-2 text-center">FILED UNDER EPHEMERA DRAWER 04</p></div>
-      </div>
-
-      <!-- COLUMN 2: Center Unfolding Glovebox Note & Guess Who Said This -->
-      <div class="md:col-span-4 flex flex-col gap-6 items-center">
-        <!-- Center Note with Click-to-Unfold Interaction -->
-        <div class="relative z-20 w-full max-w-[340px] bg-[#FFFBF0] border border-[#D5C1A2] paper-edge-shadow rotate-1 cursor-pointer transition-all duration-300" id="center-paper-container">
-          <div class="tape-strip absolute -top-3.5 left-1/2 -translate-x-1/2 w-28 h-6 rotate-1 pointer-events-none"></div>
-          <div class="p-5 sm:p-6 relative">
-            <div class="w-2.5 h-2.5 rounded-full bg-gold border border-[#8C7648] mx-auto mb-2 shadow-inner"></div>
-            <div class="font-mono text-[8px] uppercase tracking-widest text-ink-faint text-center mb-1">THE NOTE WE FOUND IN THE GLOVEBOX</div>
-            <h3 class="font-serif italic text-lg text-ink-black text-center mb-2">“For when it rains...”</h3>
-            <p class="font-script text-xl sm:text-2xl text-oxblood leading-relaxed text-center">
-              “You don't have to keep all the promises you made when you were nineteen. We like who you are now, especially on Tuesdays.”
-            </p>
-
-            <!-- Unfold Flap Action Trigger -->
-            <div class="mt-3 pt-2 border-t border-dashed border-[#DFCEB3] flex items-center justify-between font-mono text-[8px]" id="center-fold-flap">
-              <span class="text-ink-faint uppercase">FOUND UNDER SPARE TIRE • AUG '22</span>
-              <span class="text-oxblood font-bold uppercase tracking-wider flex items-center gap-1 text-[8px] hover:underline" id="center-fold-status"><span class="material-symbols-outlined text-xs">unfold_more</span> pick something up • click to unfold</span>
-            </div>
-
-            <!-- Hidden Revealed Inside Layer -->
-            <div class="hidden mt-4 pt-3 border-t-2 border-oxblood/30 bg-[#FAF3E4] p-3.5 rounded-xs transition-all duration-300" id="center-reveal-layer">
-              <div class="font-mono text-[7.5px] uppercase tracking-widest text-oxblood font-bold mb-1 flex items-center gap-1">
-                <span class="material-symbols-outlined text-[13px]">markunread_mailbox</span> P.S. SECRET CONCEALED INSIDE:
-              </div>
-              <p class="font-serif italic text-sm text-ink-black leading-snug">
-                “P.S. We still have the key to the cabin in your glovebox. Don't throw it out. Some things belong exactly where they were forgotten.”
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Guessing Game Card: Who Said This? -->
-        <div class="scrapbook-item relative w-full max-w-[340px] bg-[#F1E6D4] p-5 border border-[#C5B499] paper-edge-shadow rotate-[-1.5deg] hover:rotate-0 transition-all duration-300" id="scrap-quiz-box">
-          <div class="tape-strip absolute -top-2.5 left-8 w-16 h-4.5 -rotate-2 pointer-events-none"></div>
-          <div class="flex items-center justify-between border-b border-[#C8B89F] pb-1.5 mb-3 font-mono text-[8px] uppercase tracking-widest">
-            <span class="text-oxblood font-bold flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">quiz</span> GAME 01 • WHO SAID THIS?</span>
-            <span class="text-ink-faint">ARCHIVAL QUIZ</span>
-          </div>
-          <p class="font-serif italic text-xs sm:text-sm text-ink-black leading-snug mb-3.5 bg-[#FAF5EB] p-3 border border-[#DECDBD] rounded-xs">“she once made everyone wait 40 minutes and acted like nothing happened.”</p>
-          <div class="flex flex-wrap gap-1.5 justify-center font-mono text-[8px] uppercase" id="who-said-buttons">
-            <button class="who-btn px-2.5 py-1 bg-[#FAF5EB] hover:bg-[#EAD8BD] border border-[#BAA68B] text-ink-dim rounded-xs transition-colors font-bold cursor-pointer" data-correct="false" data-person="Nadia">[ Nadia ]</button>
-            <button class="who-btn px-2.5 py-1 bg-[#FAF5EB] hover:bg-[#EAD8BD] border border-[#BAA68B] text-ink-dim rounded-xs transition-colors font-bold cursor-pointer" data-correct="true" data-person="Kabir">[ Kabir ]</button>
-            <button class="who-btn px-2.5 py-1 bg-[#FAF5EB] hover:bg-[#EAD8BD] border border-[#BAA68B] text-ink-dim rounded-xs transition-colors font-bold cursor-pointer" data-correct="false" data-person="Meher">[ Meher ]</button>
-            <button class="who-btn px-2.5 py-1 bg-[#FAF5EB] hover:bg-[#EAD8BD] border border-[#BAA68B] text-ink-dim rounded-xs transition-colors font-bold cursor-pointer" data-correct="false" data-person="Samar &amp; Tanya">[ Samar &amp; Tanya ]</button>
-          </div>
-          <div class="hidden mt-2.5 pt-2 border-t border-dashed border-[#BAA68B] text-center font-mono text-[8px] tracking-wider uppercase" id="who-said-feedback"></div>
-        </div>
-      </div>
-
-      <!-- COLUMN 3: Flippable Scraps, Interactive Envelope & Pressed Items -->
-      <div class="md:col-span-4 flex flex-col gap-6">
-        <!-- Flippable Scraps Container -->
-        <div class="scrapbook-item relative bg-[#FAF5EB] p-4 sm:p-5 border border-[#D5C6AC] paper-edge-shadow rotate-1 hover:rotate-0 transition-all duration-300" id="ephemera-the-little-things">
-          <div class="flex items-center justify-between border-b border-dashed border-[#DFCEB3] pb-1.5 mb-3 font-mono text-[8.5px] uppercase tracking-wider text-ink-faint">
-            <span class="text-oxblood font-bold tracking-widest">THE LITTLE THINGS • FLIP TO READ</span>
-            <span class="font-script text-sm text-oxblood">interactive scraps</span>
-          </div>
-          <div class="space-y-3" id="scraps-list">
-            <!-- Scrap 1: Most Likely To -->
-            <div class="relative bg-[#FFFDF8] p-3 border border-[#DECDBD] rotate-[-1deg] paper-edge-shadow cursor-pointer transition-transform duration-300 hover:scale-[1.02] scrap-flip-card" id="scrap-card-1">
-              <div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold block">MOST LIKELY TO</span>
-                <span class="font-mono text-[6.5px] text-ink-faint uppercase">[TAP TO FLIP]</span>
-              </div>
-              <p class="font-serif text-xs text-ink-black leading-snug scrap-front">Stay up until 4 AM arguing about why Side B songs belong on Side A.</p>
-              <p class="font-script text-sm text-oxblood leading-snug scrap-back hidden">“And she ended up being 100% right about the entire track sequence!”</p>
-            </div>
-
-            <!-- Scrap 2: One Thing Only Reza Does -->
-            <div class="relative bg-[#FFFDF8] p-3 border border-[#DECDBD] rotate-[1.5deg] paper-edge-shadow cursor-pointer transition-transform duration-300 hover:scale-[1.02] scrap-flip-card" id="scrap-card-2">
-              <div class="tape-strip absolute -top-2 right-4 w-10 h-3 rotate-2 pointer-events-none"></div>
-              <div class="flex items-center justify-between mb-0.5">
-                <span class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold block">ONE THING ONLY REZA DOES</span>
-                <span class="font-mono text-[6.5px] text-ink-faint uppercase">[TAP TO FLIP]</span>
-              </div>
-              <p class="font-serif text-xs text-ink-black leading-snug scrap-front">Leaves a glass of water outside your door without saying a word.</p>
-              <p class="font-script text-sm text-oxblood leading-snug scrap-back hidden">“Even when she was the one with the fever. Always looking outward first.”</p>
-            </div>
-          <div class="scrap-flip-3d-wrap h-14 cursor-pointer select-none group" onclick="this.querySelector('.scrap-flip-inner').classList.toggle('is-flipped')" title="Click to flip scrap"><div class="scrap-flip-inner relative w-full h-full"><div class="scrap-face absolute inset-0 bg-[#FAF3E3] p-2.5 border border-[#DECDBD] paper-edge-shadow flex items-center justify-between"><span class="font-mono text-[8px] uppercase tracking-wider text-ink-dim font-bold">SOMETHING THEY DON'T REALIZE YOU REMEMBER</span><span class="font-mono text-[7px] text-oxblood uppercase tracking-widest">[TAP TO FLIP]</span></div><div class="scrap-face scrap-back-face absolute inset-0 bg-[#4D1C22] p-2 border border-[#3A1419] flex items-center justify-center text-center"><p class="font-serif italic text-xs text-[#FFF8ED] leading-tight">When you sat in the freezing cold station hallway just to make sure Meher caught the morning train.</p></div></div></div></div>
-        </div>
-
-        <!-- Openable Craft Envelope with Diner Napkin -->
-        <div class="scrapbook-item relative bg-[#EADDC7] p-4 sm:p-5 border-2 border-[#BAA68B] paper-edge-shadow rotate-[-2deg] transition-all duration-300 cursor-pointer group" id="interactive-envelope">
-          <div class="flex items-center justify-between border-b border-[#C8B89F] pb-1.5 mb-2.5">
-            <div class="font-mono text-[8px] uppercase tracking-widest text-oxblood font-bold flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-sm">drafts</span> ONE MORE THING • CRAFT ENVELOPE
-            </div>
-            <div class="w-3 h-3 rounded-full bg-[#9E824C] border border-[#5E4822] flex items-center justify-center">
-              <div class="w-1 h-1 rounded-full bg-[#35271F]"></div>
-            </div>
-          </div>
-          <p class="font-serif italic text-xs text-ink-dim leading-snug mb-2">Sealed string-and-washer pocket. Contains an unfiled diner napkin dispatch.</p>
-          <div class="pt-2 border-t border-dashed border-[#C5B499] flex items-center justify-between font-mono text-[7.5px] uppercase text-ink-faint">
-            <span class="text-oxblood font-bold group-hover:underline flex items-center gap-1" id="envelope-open-text">
-              <span class="material-symbols-outlined text-[13px]">unfold_more</span> CLICK TO UNSEAL ENVELOPE
-            </span>
-            <span class="">DO NOT BEND</span>
-          </div>
-
-          <!-- Hidden Diner Napkin that slides out -->
-          <div class="hidden mt-3 p-3.5 bg-[#FFF9ED] border border-dashed border-[#A58B5A] rounded-xs shadow-inner transition-all duration-300" id="envelope-napkin-slip">
-            <div class="font-mono text-[7px] text-[#A58B5A] uppercase tracking-widest mb-1 border-b border-[#E8DCBF] pb-0.5">
-              NAPKIN INSCRIPTION • MIDNIGHT DINER 2021
-            </div>
-            <p class="font-script text-base sm:text-lg text-oxblood leading-snug">
-              “Promise we will still play records when our hair is grey and our knees make clicking sounds. Signed in coffee stains.”
-            </p>
-          </div>
-        </div>
-
-        <!-- Preserved Lavender & Cinema Stub -->
-        <div class="flex items-center gap-3">
-          <div class="flex-1 bg-[#F8F2E4] p-2.5 border border-[#D5C4A9] paper-edge-shadow rotate-1 text-center hover:rotate-0 transition-transform duration-300 cursor-pointer"><span class="font-mono text-[7px] uppercase tracking-widest text-oxblood font-bold block mb-0.5">FROM THE ARCHIVE</span><span class="font-mono text-[6.5px] uppercase tracking-wider text-ink-faint block mb-1">[MEMORY]</span><span class="font-serif text-xs font-semibold text-ink-black block leading-tight">A MEMORY SOMEONE KEPT</span><p class="font-script text-[11px] text-ink-dim leading-tight mt-1">“Awaiting contributor response deposit”</p></div>
-          <div class="flex-1 bg-[#FFF9ED] p-2.5 border border-[#D3C2A6] paper-edge-shadow -rotate-2 relative hover:rotate-0 transition-transform duration-300 cursor-pointer"><div class="absolute -top-2 right-4 w-2 h-5 rounded-full border border-[#8C7648]"></div><div class="font-mono text-[7px] uppercase tracking-widest text-oxblood font-bold">A LITTLE THING</div><span class="font-mono text-[6.5px] uppercase tracking-wider text-ink-faint block mb-0.5">[SMALL RESPONSE]</span><div class="font-serif text-xs font-semibold text-ink-black truncate">SOMETHING THEY REMEMBER</div><p class="font-script text-[11px] text-ink-dim leading-tight mt-0.5">“One thing only Reza does · Google Form entry”</p></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Embedded Interactive Script for Scrapbook -->
-  <script id="memory-drawer-interactions-script">
-    (function() {
-      // 1. Center glovebox note unfolding
-      const centerNote = document.getElementById('center-paper-container');
-      const revealLayer = document.getElementById('center-reveal-layer');
-      const foldStatus = document.getElementById('center-fold-status');
-      if (centerNote && revealLayer && foldStatus) {
-        centerNote.addEventListener('click', function() {
-          const isOpen = !revealLayer.classList.contains('hidden');
-          if (isOpen) {
-            revealLayer.classList.add('hidden');
-            centerNote.classList.remove('note-is-unfolded');
-            foldStatus.innerHTML = '<span class="material-symbols-outlined text-xs">unfold_more</span> UNFOLD SECRET P.S.';
-          } else {
-            revealLayer.classList.remove('hidden');
-            centerNote.classList.add('note-is-unfolded');
-            foldStatus.innerHTML = '<span class="material-symbols-outlined text-xs">unfold_less</span> REFOLD NOTE';
-          }
-        });
-      }
-
-      // 2. Lifting Maine photo
-      const photoContainer = document.getElementById('lifting-photo-container');
-      const photoFrame = document.getElementById('lifting-photo-frame');
-      const photoIndicator = document.getElementById('photo-lift-indicator');
-      if (photoContainer && photoFrame) {
-        photoContainer.addEventListener('click', function() {
-          const isLifted = photoFrame.classList.contains('photo-lifted');
-          if (isLifted) {
-            photoFrame.classList.remove('photo-lifted', '-translate-y-28', 'rotate-[-16deg]', 'scale-90');
-            if (photoIndicator) photoIndicator.textContent = 'LIFT TO PEEK';
-          } else {
-            photoFrame.classList.add('photo-lifted', '-translate-y-28', 'rotate-[-16deg]', 'scale-90');
-            if (photoIndicator) photoIndicator.textContent = 'TAP TO LOWER';
-          }
-        });
-      }
-
-      // 3. Interactive craft envelope with napkin reveal
-      const envelope = document.getElementById('interactive-envelope');
-      const napkinSlip = document.getElementById('envelope-napkin-slip');
-      const envText = document.getElementById('envelope-open-text');
-      if (envelope && napkinSlip) {
-        envelope.addEventListener('click', function() {
-          const isOpened = !napkinSlip.classList.contains('hidden');
-          if (isOpened) {
-            napkinSlip.classList.add('hidden');
-            envelope.classList.remove('envelope-opened');
-            if (envText) envText.innerHTML = '<span class="material-symbols-outlined text-[13px]">unfold_more</span> CLICK TO UNSEAL ENVELOPE';
-          } else {
-            napkinSlip.classList.remove('hidden');
-            envelope.classList.add('envelope-opened');
-            if (envText) envText.innerHTML = '<span class="material-symbols-outlined text-[13px]">unfold_less</span> TUCK NAPKIN BACK INSIDE';
-          }
-        });
-      }
-
-      // 4. Who said this quiz buttons
-      const whoBtns = document.querySelectorAll('.who-btn');
-      const feedback = document.getElementById('who-said-feedback');
-      const quizCard = document.getElementById('who-said-card');
-      whoBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const isCorrect = btn.getAttribute('data-correct') === 'true';
-          if (feedback) {
-            feedback.classList.remove('hidden');
-            if (isCorrect) {
-              feedback.textContent = '✓ Correct! It was Kabir Menon (School Friend • 14 Years)';
-              feedback.className = 'mt-2.5 pt-2 border-t border-dashed border-[#BAA68B] text-center font-mono text-[8px] tracking-wider uppercase text-oxblood font-bold';
-              btn.classList.add('bg-oxblood', 'text-parchment');
-            } else {
-              feedback.textContent = '✕ Not quite! Try another friend...';
-              feedback.className = 'mt-2.5 pt-2 border-t border-dashed border-[#BAA68B] text-center font-mono text-[8px] tracking-wider uppercase text-stamp-red font-bold';
-              if (quizCard) {
-                quizCard.classList.add('translate-x-1');
-                setTimeout(() => quizCard.classList.remove('translate-x-1'), 150);
-              }
-            }
-          }
-        });
-      });
-
-      // 5. Flippable scraps
-      document.querySelectorAll('.scrap-flip-card').forEach(card => {
-        card.addEventListener('click', function() {
-          const front = card.querySelector('.scrap-front');
-          const back = card.querySelector('.scrap-back');
-          if (front && back) {
-            front.classList.toggle('hidden');
-            back.classList.toggle('hidden');
-          }
-        });
-      });
-    })();
-  </script>
 </section>
 <!-- ========================================================================= -->
 <!-- 6. TRACK ∞ — THE RUNOUT GROOVE                                            -->
@@ -2155,7 +1809,7 @@
   <!-- Subtle Archival Background Grid & Geometry -->
   <div class="absolute inset-0 pointer-events-none opacity-40 bg-[linear-gradient(to_right,#DECDBD_1px,transparent_1px),linear-gradient(to_bottom,#DECDBD_1px,transparent_1px)] bg-[size:40px_40px]"></div>
   <div class="absolute top-10 left-10 font-mono text-[8px] uppercase tracking-[0.28em] text-[#8C7665]/60 pointer-events-none hidden md:block">FOLIO DEPOSIT // ARCHIVE TERMINAL • RUNOUT GROOVE</div>
-  <div class="absolute top-10 right-10 font-mono text-[8px] uppercase tracking-[0.28em] text-[#8C7665]/60 pointer-events-none hidden md:block">MATRIX REF: RZ-2024-SIDE-INFINITY</div>
+  <div class="absolute top-10 right-10 font-mono text-[8px] uppercase tracking-[0.28em] text-[#8C7665]/60 pointer-events-none hidden md:block">MATRIX REF: RZ-SIDE-INFINITY</div>
 
   <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
     <!-- Section Header above the sleeve in open cream space -->
@@ -2195,7 +1849,7 @@
 
         <!-- Sleeve Spine Indicator along left edge -->
         <div class="absolute -left-3.5 sm:-left-5 top-6 bottom-6 w-3.5 sm:w-5 bg-[#220B0E] border-r border-[#170507] rounded-l-xs flex items-center justify-center pointer-events-none hidden sm:flex shadow-md">
-          <span class="font-mono text-[7.5px] text-[#A58B5A] -rotate-90 uppercase tracking-[0.28em] whitespace-nowrap font-bold">RZ-2024 • MASTER INNER SLEEVE</span>
+          <span class="font-mono text-[7.5px] text-[#A58B5A] -rotate-90 uppercase tracking-[0.28em] whitespace-nowrap font-bold">RZ-FOLIO • MASTER INNER SLEEVE</span>
         </div>
 
         <!-- TACTILE ARTIFACT: 3-Frame 35mm Contact Film Strip Tucked Behind Top-Left -->
@@ -2731,6 +2385,7 @@
     const closeDossierBtn = document.getElementById('close-dossier-btn');
 
     function closeDossier() {
+      document.getElementById('archive-identity-check')?.remove();
       if (dossierModal && dossierCard) {
         dossierCard.classList.remove('scale-100', 'opacity-100');
         dossierCard.classList.add('scale-95', 'opacity-0');
@@ -2742,6 +2397,8 @@
     }
 
     if (closeDossierBtn) closeDossierBtn.addEventListener('click', closeDossier);
+    const closeDossierBottomBtn = document.getElementById('close-dossier-bottom-btn');
+    if (closeDossierBottomBtn) closeDossierBottomBtn.addEventListener('click', closeDossier);
     if (dossierModal) {
       dossierModal.addEventListener('click', (e) => {
         if (e.target === dossierModal) closeDossier();
@@ -2749,108 +2406,7 @@
     }
   })();
 </script>
-<script id="scrapbook-interaction-script">
-(function() {
-  const canvas = document.getElementById('scrapbook-canvas');
-  const centerContainer = document.getElementById('centre-paper-container');
-  const centerSurface = document.getElementById('centre-paper-surface');
-  const noteFront = document.getElementById('centre-note-front');
-  const noteRevealed = document.getElementById('centre-note-revealed');
-  
-  const gridBg = canvas ? canvas.firstElementChild : null;
-  const polaroid = document.getElementById('ephemera-maine-polaroid');
-  const receipt = document.getElementById('reggio-receipt');
-  const lavender = document.getElementById('ephemera-lavender-specimen');
-  const cinema = document.getElementById('ephemera-cinema-stub');
 
-  // Center paper unfolding toggle
-  function toggleCenterNote() {
-    if (!centerContainer || !centerSurface || !noteFront || !noteRevealed) return;
-    const isUnfolded = centerContainer.classList.contains('is-unfolded');
-    if (!isUnfolded) {
-      centerContainer.classList.add('is-unfolded', 'deckled-paper-shadow-lifted', 'scale-105', 'z-30');
-      centerContainer.setAttribute('aria-expanded', 'true');
-      noteFront.classList.add('hidden');
-      noteRevealed.classList.remove('hidden');
-      requestAnimationFrame(() => {
-        noteRevealed.classList.remove('opacity-0');
-        noteRevealed.classList.add('opacity-100');
-      });
-    } else {
-      centerContainer.classList.remove('is-unfolded', 'deckled-paper-shadow-lifted', 'scale-105', 'z-30');
-      centerContainer.setAttribute('aria-expanded', 'false');
-      noteRevealed.classList.remove('opacity-100');
-      noteRevealed.classList.add('opacity-0');
-      setTimeout(() => {
-        noteRevealed.classList.add('hidden');
-        noteFront.classList.remove('hidden');
-      }, 300);
-    }
-  }
-
-  if (centerContainer) {
-    centerContainer.addEventListener('click', toggleCenterNote);
-    centerContainer.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleCenterNote();
-      }
-    });
-  }
-
-  // Scrapbook Parallax Animation Loop
-  let targetX = 0;
-  let targetY = 0;
-  let currentX = 0;
-  let currentY = 0;
-  let isHovering = false;
-  let rafId = null;
-
-  function renderParallax() {
-    currentX += (targetX - currentX) * 0.1;
-    currentY += (targetY - currentY) * 0.1;
-
-    if (gridBg) {
-      gridBg.style.transform = `translate3d(${currentX * 0.015}px, ${currentY * 0.015}px, 0)`;
-    }
-    if (polaroid) {
-      polaroid.style.transform = `translate3d(${currentX * 0.04}px, ${currentY * 0.04}px, 0) rotate(-6deg)`;
-    }
-    if (receipt) {
-      receipt.style.transform = `translate3d(${currentX * 0.03}px, ${currentY * 0.03}px, 0) rotate(4deg)`;
-    }
-    if (lavender) {
-      lavender.style.transform = `translate3d(${currentX * 0.025}px, ${currentY * 0.025}px, 0) rotate(2deg)`;
-    }
-    if (cinema) {
-      cinema.style.transform = `translate3d(${currentX * 0.05}px, ${currentY * 0.05}px, 0) rotate(-3deg)`;
-    }
-    if (centerContainer && !centerContainer.classList.contains('is-unfolded')) {
-      const tilt = currentX * 0.005;
-      centerContainer.style.transform = `translate3d(${currentX * 0.012}px, ${currentY * 0.012}px, 0) rotate(${1 + tilt}deg)`;
-    }
-
-    rafId = requestAnimationFrame(renderParallax);
-  }
-
-  if (canvas) {
-    canvas.addEventListener('mousemove', (e) => {
-      isHovering = true;
-      const rect = canvas.getBoundingClientRect();
-      targetX = e.clientX - (rect.left + rect.width / 2);
-      targetY = e.clientY - (rect.top + rect.height / 2);
-    });
-
-    canvas.addEventListener('mouseleave', () => {
-      isHovering = false;
-      targetX = 0;
-      targetY = 0;
-    });
-
-    rafId = requestAnimationFrame(renderParallax);
-  }
-})();
-</script>
 
 
 
