@@ -97,8 +97,8 @@ class ArchiveHandler(SimpleHTTPRequestHandler):
 
             saw_non_image_response = False
             for image_url in (
-                f"https://drive.google.com/uc?export=download&id={file_id}",
                 f"https://drive.google.com/thumbnail?id={file_id}&sz=w1600",
+                f"https://drive.google.com/uc?export=download&id={file_id}",
             ):
                 request = urllib.request.Request(
                     image_url, headers={"User-Agent": "Mozilla/5.0"}

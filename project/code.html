@@ -60,6 +60,10 @@
     #side-b .side-b-record-vinyl {
       background: radial-gradient(circle, #302A27 16%, #171412 17%, #27221F 30%, #14110F 31%, #2B2522 46%, #151210 47%, #27221F 63%, #100E0D 64%, #211C19 80%, #14110F 81%);
     }
+    .photo-loading-placeholder {
+      min-height: 180px;
+      background-color: #F1E7D3;
+    }
     #vinyl-shelf-scroll {
       overscroll-behavior-x: contain;
       scroll-behavior: auto;
@@ -975,21 +979,31 @@
     return '';
   }
 
-  const photoLoadCache = new Map();
+  const lazyPhotoObserver = 'IntersectionObserver' in window
+    ? new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const image = entry.target;
+        const url = image.dataset.photoSrc;
+        lazyPhotoObserver.unobserve(image);
+        if (url) image.src = url;
+      });
+    })
+    : null;
 
-  function preloadPhoto(rawUrl) {
+  function requestPhotoImage(image, rawUrl, eager = false) {
     const url = normalizePhotoUrl(rawUrl);
-    if (!url) return Promise.resolve('');
-    if (!photoLoadCache.has(url)) {
-      photoLoadCache.set(url, new Promise(resolve => {
-        const image = new Image();
-        const timeout = setTimeout(() => resolve(''), 12000);
-        image.onload = () => { clearTimeout(timeout); resolve(url); };
-        image.onerror = () => { clearTimeout(timeout); resolve(''); };
-        image.src = url;
-      }));
+    if (!image || !url) return;
+    image.decoding = 'async';
+    image.loading = eager ? 'eager' : 'lazy';
+    if (eager) {
+      image.fetchPriority = 'high';
+      image.src = url;
+      return;
     }
-    return photoLoadCache.get(url);
+    image.dataset.photoSrc = url;
+    if (lazyPhotoObserver) lazyPhotoObserver.observe(image);
+    else image.src = url;
   }
 
   function photoUrlsFromCell(value) {
@@ -1524,18 +1538,31 @@
     if (photoStoryContainer) photoStoryContainer.hidden = !data.photoStory;
     if (gallery) {
       gallery.className = 'grid gap-5 grid-cols-1';
+      gallery.querySelectorAll('img[data-photo-src]').forEach(image => {
+        if (lazyPhotoObserver) lazyPhotoObserver.unobserve(image);
+        if (image.src && !image.complete) image.removeAttribute('src');
+      });
       gallery.replaceChildren();
-      Promise.all(photos.map(preloadPhoto)).then(loadedPhotos => {
-        if (photoRequest !== dossierPhotoRequest) return;
-        const validPhotos = [...new Set(loadedPhotos.filter(Boolean))];
-        gallery.className = `grid gap-5 ${validPhotos.length > 1 ? 'sm:grid-cols-2' : 'grid-cols-1'}`;
-        gallery.innerHTML = validPhotos.map((photo, index) => `
+      gallery.className = `grid gap-5 ${photos.length > 1 ? 'sm:grid-cols-2' : 'grid-cols-1'}`;
+      gallery.innerHTML = photos.map((photo, index) => `
         <figure class="bg-[#FFFDF8] p-3.5 pb-5 border border-[#DFCDB2] paper-edge-shadow relative ${index % 2 ? 'rotate-1' : '-rotate-1'}">
           <div class="tape-strip absolute -top-3 left-8 w-20 h-5 -rotate-2 pointer-events-none"></div>
-          <img alt="Submitted archive photograph ${index + 1}" class="block max-w-full max-h-[520px] w-auto h-auto mx-auto filter sepia brightness-95" src="${escapeHtml(photo)}">
+          <img alt="Submitted archive photograph ${index + 1}" class="photo-loading-placeholder block max-w-full max-h-[520px] w-auto h-auto mx-auto filter sepia brightness-95" data-photo-src="${escapeHtml(photo)}" decoding="async" loading="lazy">
         </figure>`).join('');
-        if (plateEl) plateEl.textContent = validPhotos.length ? `${validPhotos.length} PHOTOGRAPH${validPhotos.length === 1 ? '' : 'S'} FILED` : '';
-        if (photoSection) photoSection.hidden = validPhotos.length === 0 && !data.photoStory;
+      if (plateEl) plateEl.textContent = photos.length ? `${photos.length} PHOTOGRAPH${photos.length === 1 ? '' : 'S'} FILED` : '';
+      if (photoSection) photoSection.hidden = photos.length === 0 && !data.photoStory;
+      gallery.querySelectorAll('img[data-photo-src]').forEach((image, index) => {
+        const finishLoading = () => image.classList.remove('photo-loading-placeholder');
+        image.addEventListener('load', finishLoading, { once: true });
+        image.addEventListener('error', () => {
+          if (photoRequest !== dossierPhotoRequest) return;
+          image.closest('figure')?.remove();
+          const remaining = gallery.querySelectorAll('img').length;
+          gallery.className = `grid gap-5 ${remaining > 1 ? 'sm:grid-cols-2' : 'grid-cols-1'}`;
+          if (plateEl) plateEl.textContent = remaining ? `${remaining} PHOTOGRAPH${remaining === 1 ? '' : 'S'} FILED` : '';
+          if (photoSection) photoSection.hidden = remaining === 0 && !data.photoStory;
+        }, { once: true });
+        requestPhotoImage(image, image.dataset.photoSrc, index === 0);
       });
     }
 
@@ -1919,22 +1946,12 @@
         });
       });
     };
-    const loadScrapbookPhotos = async () => {
+    const loadScrapbookPhotos = () => {
       const candidates = shuffle(real.flatMap(person => {
         const photos = shuffle((person.photos || []).map(normalizePhotoUrl).filter(Boolean));
         return photos.length ? [{ sourceId: person.id, name: person.name, url: photos[0] }] : [];
       })).slice(0, 6);
-      const valid = [];
-      let nextCandidate = 0;
-      const worker = async () => {
-        while (nextCandidate < candidates.length && valid.length < 3) {
-          const candidate = candidates[nextCandidate++];
-          const loadedUrl = await preloadPhoto(candidate.url);
-          if (loadedUrl) valid.push({ label: 'PHOTOGRAPH', photo: loadedUrl, name: candidate.name, sourceId: candidate.sourceId });
-        }
-      };
-      await Promise.all(Array.from({ length: Math.min(3, candidates.length) }, worker));
-      return shuffle(valid);
+      return candidates.map(candidate => ({ label: 'PHOTOGRAPH', photo: candidate.url, name: candidate.name, sourceId: candidate.sourceId }));
     };
     const buildGroups = photoPool => {
       const groups = [];
@@ -1986,7 +2003,7 @@
       ), 6, true);
       return groups;
     };
-    let photoPool = await loadScrapbookPhotos();
+    let photoPool = loadScrapbookPhotos();
     let groups = buildGroups(photoPool);
     if (!groups.length) groups = buildGroups([]);
     if (!groups.length) {
@@ -2069,6 +2086,9 @@
       const selectedFragmentIndexes = new Set(fragmentCandidates.filter(({ item }) => item.small || item.fragment).map(({ index }) => index));
       const remainingFragmentSlots = Math.max(0, 4 - selectedFragmentIndexes.size);
       fragmentCandidates.filter(({ item, index }) => !item.small && !selectedFragmentIndexes.has(index)).slice(0, remainingFragmentSlots).forEach(({ index }) => selectedFragmentIndexes.add(index));
+      grid.querySelectorAll('.scrapbook-submitted-photo').forEach(image => {
+        if (lazyPhotoObserver) lazyPhotoObserver.unobserve(image);
+      });
       grid.innerHTML = next.items.map((item, index) => {
         const supportingFragment = selectedFragmentIndexes.has(index);
         const fragmentClass = supportingFragment && !item.photo && !item.quiz ? `scrapbook-fragment scrapbook-fragment-${Math.floor(Math.random() * 3)}` : '';
@@ -2084,7 +2104,7 @@
           : item.value;
         const fullValue = item.full || (fragmentClass && item.value.length > 98 ? item.value : '');
         const content = item.photo
-          ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" src="${escapeHtml(item.photo)}" alt="Submitted photograph from ${escapeHtml(item.name)}">`
+          ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" data-photo-src="${escapeHtml(item.photo)}" loading="lazy" decoding="async" alt="Submitted photograph from ${escapeHtml(item.name)}">`
           : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} ${fragmentClass ? 'scrapbook-fragment-copy' : ''} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(displayValue)}</p>${fullValue ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(fullValue)}</p>` : ''}`;
         return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} ${fragmentClass} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};grid-column:${column}/span ${columnSpan};grid-row:${row};--scrap-rotation:${rotation}deg;--scrap-offset-x:${offsetX}px;--scrap-offset-y:${offsetY}px">
           ${item.folded ? '<div class="absolute top-0 right-0 w-4 h-4 bg-[#E1CEB4] border-l border-b border-[#DECDBD] shadow-sm pointer-events-none"></div>' : item.photo ? '<div class="absolute top-0 left-5 right-5 h-1 border-x border-[#DECDBD]"></div>' : '<div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>'}
@@ -2094,7 +2114,10 @@
         </article>`;
       }).join('');
       requestAnimationFrame(() => grid.classList.remove('opacity-0'));
-      grid.querySelectorAll('.scrapbook-submitted-photo').forEach(image => image.addEventListener('error', () => image.closest('article')?.remove(), { once: true }));
+      grid.querySelectorAll('.scrapbook-submitted-photo').forEach(image => {
+        image.addEventListener('error', () => image.closest('article')?.remove(), { once: true });
+        requestPhotoImage(image, image.dataset.photoSrc);
+      });
     };
     const scheduleRotation = delay => {
       if (rotationTimer) clearTimeout(rotationTimer);
@@ -2106,11 +2129,11 @@
       if (!groups.length) groups = buildGroups([]);
       renderState(chooseState());
       scheduleRotation(60000 + Math.random() * 30000);
-      loadScrapbookPhotos().then(refreshedPhotos => {
-        if (!refreshedPhotos.length) return;
+      const refreshedPhotos = loadScrapbookPhotos();
+      if (refreshedPhotos.length) {
         photoPool = refreshedPhotos;
         groups = buildGroups(photoPool);
-      }).catch(() => {});
+      }
     };
     renderState(chooseState());
     const markInteraction = () => { interactionUntil = Date.now() + 5000; };
