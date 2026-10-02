@@ -68,8 +68,13 @@
       box-shadow: 0 4px 18px -2px rgba(45, 32, 22, 0.18), 0 1px 4px rgba(45, 32, 22, 0.1);
     }
     .scrapbook-state-content {
-      position: absolute;
-      inset: 0;
+      position: relative;
+      inset: auto;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: minmax(140px, auto);
+      gap: 14px;
+      align-content: start;
       min-height: 0 !important;
       transition: opacity 0.45s ease;
     }
@@ -79,9 +84,13 @@
       background-image: repeating-linear-gradient(0deg, rgba(93, 63, 42, 0.018) 0, rgba(93, 63, 42, 0.018) 1px, transparent 1px, transparent 5px);
     }
     .scrapbook-item {
-      position: absolute !important;
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
       margin: 0 !important;
       max-width: none !important;
+      width: auto !important;
+      min-width: 0;
       padding: 10px 12px !important;
       transform: rotate(var(--scrap-rotation, 0deg));
       transform-origin: center center;
@@ -130,12 +139,14 @@
         left: auto !important;
         top: auto !important;
         width: auto !important;
+        grid-column: auto !important;
+        grid-row: auto !important;
         min-width: 0;
         transform: rotate(var(--scrap-rotation, 0deg)) !important;
       }
       .scrapbook-item.scrapbook-featured,
       .scrapbook-item.scrapbook-quiz {
-        grid-column: span 2;
+        grid-column: span 2 !important;
       }
       .scrapbook-item.scrapbook-photo {
         width: 92% !important;
@@ -1873,27 +1884,49 @@
         'mixed-archive': 'grid-cols-2 md:grid-cols-4'
       };
       grid.className = `relative z-10 grid ${gridColumns[next.group.key] || 'grid-cols-2 md:grid-cols-3'} gap-x-3 gap-y-1 sm:gap-x-5 items-start content-start scrapbook-state-content`;
+      grid.style.display = 'grid';
+      grid.style.gridTemplateColumns = 'repeat(12, minmax(0, 1fr))';
+      grid.style.gridAutoRows = 'minmax(140px, auto)';
+      grid.style.gap = '14px';
       if (badge) badge.textContent = `ARCHIVAL EPHEMERA • ${next.label}`;
       grid.classList.add('opacity-0');
-      const desktopLayouts = {
-        'photograph-memory': [[3,7,24],[73,48,19],[30,20,27],[47,4,20],[4,62,23],[51,60,22],[73,10,19],[29,73,23],[53,31,21],[7,35,20]],
-        'little-things': [[4,8,21],[30,16,24],[61,7,25],[73,61,20],[5,58,21],[34,66,23],[52,38,22],[6,35,20],[76,31,18],[35,4,21]],
-        story: [[27,22,31],[4,7,21],[74,47,19],[58,5,20],[6,62,22],[65,71,22],[43,66,23],[72,11,18],[4,37,19],[46,5,20]],
-        'message-drawer': [[28,15,27],[58,62,25],[5,9,20],[73,45,19],[5,63,21],[46,5,21],[70,9,19],[31,68,22],[48,38,20],[5,37,19]],
-        'who-said-this': [[28,20,32],[4,7,20],[73,55,19],[6,66,22],[68,8,21],[48,67,22],[5,39,19],[74,31,18],[40,6,20],[45,43,20]],
-        'mixed-archive': [[3,10,21],[73,48,19],[29,21,25],[49,4,20],[4,64,21],[52,63,22],[62,26,23],[31,68,22],[74,9,19],[6,38,19]]
+      const safeLayouts = {
+        'photograph-memory': [
+          [[1,1,3],[1,10,3],[1,4,6],[2,1,4],[2,5,4],[2,9,4],[3,4,5]],
+          [[1,1,3],[1,10,3],[1,4,6],[2,9,4],[2,1,4],[2,5,4],[3,4,5]]
+        ],
+        'little-things': [
+          [[1,1,3],[1,4,3],[1,7,3],[1,10,3],[2,1,4],[2,5,4],[2,9,4],[3,4,5]],
+          [[1,1,4],[1,5,4],[1,9,4],[2,5,4],[2,1,4],[2,9,4],[3,2,4],[3,7,4]]
+        ],
+        story: [
+          [[1,4,6],[1,1,3],[1,10,3],[2,1,4],[2,5,4],[2,9,4],[3,4,5]],
+          [[1,4,6],[1,10,3],[1,1,3],[2,9,4],[2,1,4],[2,5,4],[3,4,5]]
+        ],
+        'message-drawer': [
+          [[1,4,5],[2,10,3],[1,1,3],[1,10,3],[2,1,3],[2,4,3],[2,7,3]],
+          [[1,4,5],[2,7,3],[1,10,3],[1,1,3],[2,1,3],[2,4,3],[2,10,3]]
+        ],
+        'who-said-this': [
+          [[1,4,6],[1,1,3],[1,10,3],[2,1,3],[2,4,4],[2,8,5],[3,4,5]],
+          [[1,4,6],[1,10,3],[1,1,3],[2,5,4],[2,1,4],[2,9,4],[3,4,5]]
+        ],
+        'mixed-archive': [
+          [[1,1,3],[1,4,3],[1,10,3],[1,7,3],[2,1,3],[2,4,3],[2,7,6],[3,1,4],[3,5,4],[3,9,4]],
+          [[1,1,3],[1,10,3],[2,1,3],[2,4,4],[2,8,5],[3,1,3],[1,4,6],[3,4,3],[3,7,3],[3,10,3]]
+        ]
       };
+      const layoutTemplates = safeLayouts[next.group.key] || safeLayouts['mixed-archive'];
+      const layout = shuffle(layoutTemplates)[0];
       grid.innerHTML = next.items.map((item, index) => {
         const classes = item.photo ? 'bg-[#F8F2E8] scrapbook-photo' : item.featured ? 'bg-[#FFFDF8] scrapbook-featured' : item.folded ? 'bg-[#F6EAD8] scrapbook-folded' : item.quiz ? 'scrapbook-quiz' : item.small ? 'bg-[#F7EFD9]' : 'bg-[#FFFDF8]';
         const photoHeight = ['h-[100px] sm:h-[126px]', 'h-[116px] sm:h-[144px]', 'h-[130px] sm:h-[158px]'][Math.floor(Math.random() * 3)];
-        const [left, top, width] = (desktopLayouts[next.group.key] || desktopLayouts['mixed-archive'])[index % 10];
-        const jitterX = (Math.random() * 4 - 2).toFixed(1);
-        const jitterY = (Math.random() * 5 - 2.5).toFixed(1);
-        const rotation = (Math.random() * 4.4 - 2.2).toFixed(1);
+        const [row, column, columnSpan] = layout[index % layout.length];
+        const rotation = (Math.random() * 2.8 - 1.4).toFixed(1);
         const content = item.photo
           ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" src="${escapeHtml(item.photo)}" alt="Submitted photograph from ${escapeHtml(item.name)}">`
           : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(item.value)}</p>${item.full ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(item.full)}</p>` : ''}`;
-        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};left:calc(${left}% + ${jitterX}px);top:calc(${(top * 0.55).toFixed(1)}% + ${jitterY}px);width:${width}%;--scrap-rotation:${rotation}deg">
+        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};grid-column:${column}/span ${columnSpan};grid-row:${row};--scrap-rotation:${rotation}deg">
           ${item.folded ? '<div class="absolute top-0 right-0 w-4 h-4 bg-[#E1CEB4] border-l border-b border-[#DECDBD] shadow-sm pointer-events-none"></div>' : item.photo ? '<div class="absolute top-0 left-5 right-5 h-1 border-x border-[#DECDBD]"></div>' : '<div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>'}
           <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-2">${escapeHtml(item.label)}</div>${content}
           ${item.name && !item.hideName ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2">${escapeHtml(item.name)}</div>` : ''}
