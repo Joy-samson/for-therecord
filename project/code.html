@@ -68,7 +68,84 @@
       box-shadow: 0 4px 18px -2px rgba(45, 32, 22, 0.18), 0 1px 4px rgba(45, 32, 22, 0.1);
     }
     .scrapbook-state-content {
+      position: absolute;
+      inset: 0;
+      min-height: 0 !important;
       transition: opacity 0.45s ease;
+    }
+    #scrapbook-canvas {
+      min-height: 640px;
+      background-color: #F7F0E3;
+      background-image: repeating-linear-gradient(0deg, rgba(93, 63, 42, 0.018) 0, rgba(93, 63, 42, 0.018) 1px, transparent 1px, transparent 5px);
+    }
+    .scrapbook-item {
+      position: absolute !important;
+      margin: 0 !important;
+      max-width: none !important;
+      padding: 10px 12px !important;
+      transform: rotate(var(--scrap-rotation, 0deg));
+      transform-origin: center center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .scrapbook-item:hover,
+    .scrapbook-item:focus-within {
+      transform: rotate(0deg) translateY(-3px);
+      box-shadow: 0 8px 22px -5px rgba(45, 32, 22, 0.3), 0 2px 5px rgba(45, 32, 22, 0.12);
+    }
+    .scrapbook-item.rotate-0 { --scrap-rotation: 0deg; }
+    .scrapbook-item.scrapbook-photo {
+      padding: 7px 7px 13px !important;
+      background: #FBF8F0 !important;
+    }
+    .scrapbook-item.scrapbook-featured {
+      min-height: 0 !important;
+      padding: 14px 16px !important;
+      background: #FFFDF8 !important;
+    }
+    .scrapbook-item.scrapbook-folded {
+      min-height: 0 !important;
+      background: #F4E8D5 !important;
+    }
+    .scrapbook-item.scrapbook-quiz {
+      background: #F6EEDC !important;
+      padding: 12px 14px !important;
+    }
+    @media (max-width: 767px) {
+      #scrapbook-canvas {
+        min-height: 0;
+        padding: 16px !important;
+        overflow: visible;
+      }
+      .scrapbook-state-content {
+        position: relative;
+        inset: auto;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px 10px !important;
+        min-height: 0 !important;
+      }
+      .scrapbook-item {
+        position: relative !important;
+        inset: auto !important;
+        left: auto !important;
+        top: auto !important;
+        width: auto !important;
+        min-width: 0;
+        transform: rotate(var(--scrap-rotation, 0deg)) !important;
+      }
+      .scrapbook-item.scrapbook-featured,
+      .scrapbook-item.scrapbook-quiz {
+        grid-column: span 2;
+      }
+      .scrapbook-item.scrapbook-photo {
+        width: 92% !important;
+      }
+    }
+    @media (max-width: 390px) {
+      #scrapbook-canvas { padding: 12px !important; }
+      .scrapbook-state-content { gap: 12px 8px !important; }
+      .scrapbook-item { padding: 9px !important; }
+      .scrapbook-item.scrapbook-photo { padding: 6px 6px 11px !important; }
     }
     .deep-vinyl-shadow {
       box-shadow: 0 18px 40px -8px rgba(20, 10, 8, 0.48), 0 6px 18px rgba(0, 0, 0, 0.25);
@@ -1678,13 +1755,23 @@
     const stories = pool([['A STORY WORTH KEEPING', 'story']]);
     const messages = pool([['BIRTHDAY MESSAGE', 'birthdayMessage'], ['ANYTHING ELSE', 'anythingElse']]);
     const quizSources = [...memories, ...messages];
-    const pick = (items, count, excluded = new Set()) => shuffle(items.filter(item => !item.sourceId || !excluded.has(item.sourceId))).slice(0, count);
+    const itemKey = item => `${item.sourceId || ''}:${item.label}:${item.photo || item.value || ''}`;
     const compose = (...sections) => {
-      const excluded = new Set();
-      return sections.flatMap(({ items, count, decorate }) => pick(items, count, excluded).map(item => {
-        if (item.sourceId) excluded.add(item.sourceId);
-        return decorate ? decorate(item) : item;
-      }));
+      const usedPeople = new Set();
+      const usedContent = new Set();
+      return sections.flatMap(({ items, count, decorate }) => {
+        const available = shuffle(items.filter(item => !usedContent.has(itemKey(item))));
+        const distinct = available.filter(item => !item.sourceId || !usedPeople.has(item.sourceId));
+        const selected = distinct.slice(0, count);
+        if (selected.length < count) {
+          selected.push(...available.filter(item => !selected.includes(item)).slice(0, count - selected.length));
+        }
+        return selected.map(item => {
+          usedContent.add(itemKey(item));
+          if (item.sourceId) usedPeople.add(item.sourceId);
+          return decorate ? decorate(item) : item;
+        });
+      });
     };
     const loadScrapbookPhotos = async () => {
       const candidates = shuffle(real.flatMap(person => {
@@ -1732,10 +1819,10 @@
         const choices = shuffle([correct, ...shuffle(real.filter(person => person.id !== correct.id)).slice(0, Math.min(3, real.length - 1))]);
         return compose(
           { items: [{ ...source, name: '', hideName: true, quiz: { answerId: correct.id, choices } }], count: 1 },
-          { items: photoPool, count: 1 }, { items: little, count: 1 }, { items: messages, count: 1, decorate: item => ({ ...item, small: true }) },
+          { items: photoPool, count: 1 }, { items: little, count: 2 }, { items: messages, count: 1, decorate: item => ({ ...item, small: true }) },
           { items: memories, count: 1 }, { items: photoStoryPool, count: 1 }
         );
-      }, 6);
+      }, 7);
       add('mixed-archive', 'MIXED ARCHIVE • TABLE NO. 06', () => compose(
         { items: photoPool, count: 3 }, { items: memories, count: 1 }, { items: little, count: 2 },
         { items: stories, count: 1, decorate: item => ({ ...item, featured: true }) }, { items: messages, count: 2, decorate: item => ({ ...item, small: true }) }, { items: photoStoryPool, count: 1 }
@@ -1788,18 +1875,25 @@
       grid.className = `relative z-10 grid ${gridColumns[next.group.key] || 'grid-cols-2 md:grid-cols-3'} gap-x-3 gap-y-1 sm:gap-x-5 items-start content-start scrapbook-state-content`;
       if (badge) badge.textContent = `ARCHIVAL EPHEMERA • ${next.label}`;
       grid.classList.add('opacity-0');
-      const positions = ['rotate-[-2deg] translate-y-1', 'rotate-[1.5deg] -translate-y-2', 'rotate-[-1deg] translate-y-3', 'rotate-[2deg]', '-rotate-1 -translate-y-1', 'rotate-1 translate-y-2', '-rotate-2', 'rotate-[0.8deg] -translate-y-1'];
+      const desktopLayouts = {
+        'photograph-memory': [[3,7,24],[73,48,19],[30,20,27],[47,4,20],[4,62,23],[51,60,22],[73,10,19],[29,73,23],[53,31,21],[7,35,20]],
+        'little-things': [[4,8,21],[30,16,24],[61,7,25],[73,61,20],[5,58,21],[34,66,23],[52,38,22],[6,35,20],[76,31,18],[35,4,21]],
+        story: [[27,22,31],[4,7,21],[74,47,19],[58,5,20],[6,62,22],[65,71,22],[43,66,23],[72,11,18],[4,37,19],[46,5,20]],
+        'message-drawer': [[28,15,27],[58,62,25],[5,9,20],[73,45,19],[5,63,21],[46,5,21],[70,9,19],[31,68,22],[48,38,20],[5,37,19]],
+        'who-said-this': [[28,20,32],[4,7,20],[73,55,19],[6,66,22],[68,8,21],[48,67,22],[5,39,19],[74,31,18],[40,6,20],[45,43,20]],
+        'mixed-archive': [[3,10,21],[73,48,19],[29,21,25],[49,4,20],[4,64,21],[52,63,22],[62,26,23],[31,68,22],[74,9,19],[6,38,19]]
+      };
       grid.innerHTML = next.items.map((item, index) => {
-        const classes = item.photo ? 'bg-[#F8F2E8] p-2 pb-4' : item.featured ? 'bg-[#FFFDF8] p-5 sm:p-6 min-h-[215px]' : item.folded ? 'bg-[#F6EAD8] p-4 min-h-[110px]' : item.small ? 'bg-[#F7EFD9] p-3' : 'bg-[#FFFDF8] p-4';
-        const photoHeight = ['h-[118px] sm:h-[132px]', 'h-[145px] sm:h-[160px]', 'h-[170px] sm:h-[185px]'][Math.floor(Math.random() * 3)];
-        const itemLayout = item.featured || (item.folded && index === 0) || item.quiz
-          ? 'sm:col-span-2 sm:row-span-2'
-          : item.photo && ['photograph-memory', 'mixed-archive'].includes(next.group.key) ? 'md:row-span-2' : '';
+        const classes = item.photo ? 'bg-[#F8F2E8] scrapbook-photo' : item.featured ? 'bg-[#FFFDF8] scrapbook-featured' : item.folded ? 'bg-[#F6EAD8] scrapbook-folded' : item.quiz ? 'scrapbook-quiz' : item.small ? 'bg-[#F7EFD9]' : 'bg-[#FFFDF8]';
+        const photoHeight = ['h-[100px] sm:h-[126px]', 'h-[116px] sm:h-[144px]', 'h-[130px] sm:h-[158px]'][Math.floor(Math.random() * 3)];
+        const [left, top, width] = (desktopLayouts[next.group.key] || desktopLayouts['mixed-archive'])[index % 10];
+        const jitterX = (Math.random() * 4 - 2).toFixed(1);
+        const jitterY = (Math.random() * 5 - 2.5).toFixed(1);
+        const rotation = (Math.random() * 4.4 - 2.2).toFixed(1);
         const content = item.photo
           ? `<img class="scrapbook-submitted-photo block w-full ${photoHeight} object-cover" src="${escapeHtml(item.photo)}" alt="Submitted photograph from ${escapeHtml(item.name)}">`
           : `<p class="font-serif ${item.featured ? 'text-lg sm:text-xl' : 'text-sm'} text-ink-black leading-snug whitespace-pre-line">${escapeHtml(item.value)}</p>${item.full ? `<button type="button" class="scrapbook-reveal font-mono text-[7px] uppercase tracking-wider text-oxblood mt-2 underline" aria-expanded="false">Read full note</button><p class="scrapbook-full hidden font-serif text-sm text-ink-black leading-snug whitespace-pre-line mt-2">${escapeHtml(item.full)}</p>` : ''}`;
-        const offset = index % 3 === 1 ? -8 : index % 3 === 2 ? 4 : 0;
-        return `<article class="scrapbook-item relative w-full max-w-[360px] mx-auto border border-[#DECDBD] paper-edge-shadow ${classes} ${positions[index % positions.length]} ${itemLayout} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};margin-top:${offset}px">
+        return `<article class="scrapbook-item border border-[#DECDBD] paper-edge-shadow ${classes} transition-transform duration-300" data-scrap-index="${index}" style="z-index:${10 + index};left:calc(${left}% + ${jitterX}px);top:calc(${(top * 0.55).toFixed(1)}% + ${jitterY}px);width:${width}%;--scrap-rotation:${rotation}deg">
           ${item.folded ? '<div class="absolute top-0 right-0 w-4 h-4 bg-[#E1CEB4] border-l border-b border-[#DECDBD] shadow-sm pointer-events-none"></div>' : item.photo ? '<div class="absolute top-0 left-5 right-5 h-1 border-x border-[#DECDBD]"></div>' : '<div class="tape-strip absolute -top-2 left-4 w-10 h-3 -rotate-2 pointer-events-none"></div>'}
           <div class="font-mono text-[7px] uppercase tracking-wider text-oxblood font-bold mb-2">${escapeHtml(item.label)}</div>${content}
           ${item.name && !item.hideName ? `<div class="font-mono text-[7px] uppercase text-ink-faint mt-2">${escapeHtml(item.name)}</div>` : ''}
@@ -1813,15 +1907,17 @@
       if (rotationTimer) clearTimeout(rotationTimer);
       rotationTimer = setTimeout(rotate, delay);
     };
-    const rotate = async () => {
+    const rotate = () => {
       if (Date.now() < interactionUntil) { scheduleRotation(2500); return; }
-      const refreshedPhotos = await loadScrapbookPhotos();
-      if (Date.now() < interactionUntil) { scheduleRotation(2500); return; }
-      if (refreshedPhotos.length) photoPool = refreshedPhotos;
       groups = buildGroups(photoPool);
       if (!groups.length) groups = buildGroups([]);
       renderState(chooseState());
       scheduleRotation(60000 + Math.random() * 30000);
+      loadScrapbookPhotos().then(refreshedPhotos => {
+        if (!refreshedPhotos.length) return;
+        photoPool = refreshedPhotos;
+        groups = buildGroups(photoPool);
+      }).catch(() => {});
     };
     renderState(chooseState());
     const markInteraction = () => { interactionUntil = Date.now() + 5000; };
