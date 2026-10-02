@@ -903,6 +903,7 @@
     unlocked: new Set(),
     activeSong: null
   };
+  const spotifyMetadataCache = new Map();
   const ENABLE_ARCHIVE_IDENTITY_CHECK = false;
   let dossierPhotoRequest = 0;
   try {
@@ -1039,6 +1040,17 @@
     return text.replace(/\s+/g, ' ');
   }
 
+  function parseSpotifyTrackUrl(value) {
+    try {
+      const parsed = new URL(normalizeText(value));
+      const match = parsed.pathname.match(/^\/track\/([A-Za-z0-9]{22})\/?$/);
+      if (parsed.protocol !== 'https:' || !['open.spotify.com', 'www.open.spotify.com'].includes(parsed.hostname) || !match) return null;
+      return { id: match[1], normalizedUrl: `https://open.spotify.com/track/${match[1]}` };
+    } catch (_) {
+      return null;
+    }
+  }
+
   function normalizeContributor(raw, index) {
     const row = raw || {};
     const name = sentenceCase(pickValue(row, ['Name', 'Your name', 'Contributor Name']));
@@ -1069,13 +1081,18 @@
       { spotifyUrl: spotifyTwo, whyThisSong: whySongTwo },
       { spotifyUrl: spotifyThree, whyThisSong: whySongThree },
       { spotifyUrl: spotifyFour, whyThisSong: whySongFour }
-    ].map((song, idx) => ({
-      spotifyUrl: normalizeText(song.spotifyUrl),
-      whyThisSong: sentenceCase(song.whyThisSong),
-      title: sentenceCase(pickValue(row, [`Song ${idx + 1} title`, `Track ${idx + 1} title`])),
-      trackNumber: idx + 1,
-      contributorName: name
-    })).filter(song => song.spotifyUrl);
+    ].map((song, idx) => {
+      const spotify = parseSpotifyTrackUrl(song.spotifyUrl);
+      return spotify ? {
+        spotifyUrl: normalizeText(song.spotifyUrl),
+        spotifyId: spotify.id,
+        normalizedSpotifyUrl: spotify.normalizedUrl,
+        whyThisSong: sentenceCase(song.whyThisSong),
+        title: '',
+        trackNumber: idx + 1,
+        contributorName: name
+      } : null;
+    }).filter(Boolean);
 
     const photoEntries = Object.entries(row)
       .filter(([header]) => /^photo\s*\d+/i.test(header) || /^(photos?|image|uploaded photos)$/i.test(header.trim()) || /^📸\s*upload your photos/i.test(header.trim()))
@@ -1171,6 +1188,7 @@
 
     renderContributorCards();
     renderTrackSlips();
+    resolveSpotifyTrackTitles();
     renderTrackInfinityMessages();
     renderScrapbook();
     renderArchiveMetadata();
@@ -1313,7 +1331,7 @@
         contributor,
         song,
         trackNumber: contributor.songs.length > 1 ? songIndex + 1 : 1,
-        title: song.title || 'UNTITLED CUT',
+        title: song.title || 'RESOLVING CUT...',
         artist: contributor.name,
         note: normalizeText(song.whyThisSong || ''),
         hand: `${contributor.name} • ${contributor.relationship || 'archive contribution'}`
@@ -1326,15 +1344,15 @@
     }
 
     container.innerHTML = tracks.map((entry, index) => {
-      const title = entry.song.title || 'UNTITLED CUT';
+      const title = entry.song.title || 'RESOLVING CUT...';
       const label = `CUT ${String(index + 1).padStart(2, '0')}`;
       return `
-        <div class="track-slip cursor-pointer p-3 sm:p-3.5 border-l-4 border-l-oxblood border-y border-r border-[#D8C9B0] paper-edge-shadow bg-manila-card hover:bg-[#FAF3E4] transition-all duration-200" data-track="${escapeHtml(title)}" data-spotify-url="${escapeHtml(entry.song.spotifyUrl)}" data-artist="${escapeHtml(entry.artist)}" data-tracknum="${String(index + 1).padStart(2, '0')}" data-note="${escapeHtml(entry.note)}" data-hand="${escapeHtml(entry.hand)}">
+        <div class="track-slip cursor-pointer p-3 sm:p-3.5 border-l-4 border-l-oxblood border-y border-r border-[#D8C9B0] paper-edge-shadow bg-manila-card hover:bg-[#FAF3E4] transition-all duration-200" data-track="${escapeHtml(title)}" data-spotify-url="${escapeHtml(entry.song.spotifyUrl)}" data-spotify-id="${escapeHtml(entry.song.spotifyId)}" data-artist="${escapeHtml(entry.artist)}" data-tracknum="${String(index + 1).padStart(2, '0')}" data-note="${escapeHtml(entry.note)}" data-hand="${escapeHtml(entry.hand)}">
           <div class="flex items-start justify-between gap-3">
             <div class="flex items-start gap-3 min-w-0">
               <span class="font-mono text-[9px] uppercase tracking-[0.22em] text-oxblood font-bold min-w-[42px] mt-0.5">${label}</span>
               <div class="min-w-0">
-                <h3 class="font-serif text-lg sm:text-xl text-ink-black leading-tight tracking-[-0.02em] truncate">${escapeHtml(title)}</h3>
+                <h3 class="font-serif text-lg sm:text-xl text-ink-black leading-tight tracking-[-0.02em] break-words">${escapeHtml(title)}</h3>
                 <p class="font-mono text-[8px] uppercase tracking-[0.18em] text-[#796A5D] mt-0.5">${escapeHtml(entry.artist)} · TRACK ${String(index + 1).padStart(2, '0')}</p>
               </div>
             </div>
@@ -1343,6 +1361,52 @@
         </div>
       `;
     }).join('');
+  }
+
+  async function resolveSpotifyTrackTitles() {
+    const pending = [];
+    state.contributors.forEach(contributor => (contributor.songs || []).forEach(song => {
+      if (!spotifyMetadataCache.has(song.normalizedSpotifyUrl)) pending.push(song.normalizedSpotifyUrl);
+    }));
+    const uniqueUrls = [...new Set(pending)];
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < uniqueUrls.length) {
+        const url = uniqueUrls[cursor++];
+        let metadata = null;
+        try {
+          const saved = sessionStorage.getItem(`spotify-title:${url}`);
+          if (saved) {
+            const cached = JSON.parse(saved);
+            if (cached && typeof cached.title === 'string' && cached.title.trim()) metadata = cached;
+          }
+        } catch (_) {}
+        if (!metadata) {
+          try {
+            const response = await fetch(`/api/spotify-metadata?url=${encodeURIComponent(url)}`, { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error('Metadata unavailable');
+            const result = await response.json();
+            if (!result || result.ok !== true || typeof result.title !== 'string' || !result.title.trim()) throw new Error('Metadata unavailable');
+            metadata = { title: result.title.trim() };
+            try { sessionStorage.setItem(`spotify-title:${url}`, JSON.stringify(metadata)); } catch (_) {}
+          } catch (_) {
+            metadata = { title: 'UNTITLED CUT' };
+          }
+        }
+        spotifyMetadataCache.set(url, metadata);
+        state.contributors.forEach(contributor => (contributor.songs || []).forEach(song => {
+          if (song.normalizedSpotifyUrl === url) song.title = metadata.title;
+        }));
+        document.querySelectorAll('.track-slip').forEach(slip => {
+          if (slip.dataset.spotifyId !== (url.split('/').pop() || '')) return;
+          slip.dataset.track = metadata.title;
+          const title = slip.querySelector('h3');
+          if (title) title.textContent = metadata.title;
+          if (state.activeSong === slip) selectTrack(slip, slip);
+        });
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(4, uniqueUrls.length) }, worker));
   }
 
   function getVisibleContributorData() {
@@ -1645,13 +1709,14 @@
     const quoteEl = document.getElementById('sidea-panel-quote');
     const handEl = document.getElementById('sidea-panel-hand');
     const refEl = document.getElementById('sidea-panel-cutref');
-    if (quoteEl) quoteEl.textContent = note;
+    if (quoteEl) quoteEl.textContent = note || 'NO NOTE ATTACHED TO THIS CUT.';
     if (handEl) handEl.textContent = artist ? `in ${artist}'s hand` : '';
     const notePanel = document.getElementById('sidea-sleeve-footnote-panel');
-    if (notePanel) notePanel.hidden = !note;
+    if (notePanel) notePanel.hidden = false;
     if (refEl) refEl.textContent = `CUT: A • ${num} — ${trackTitle.toUpperCase()}`;
     document.querySelectorAll('.track-slip').forEach(item => item.classList.remove('bg-[#FAF3E4]', 'border-oxblood'));
     if (element) element.classList.add('bg-[#FAF3E4]', 'border-oxblood');
+    state.activeSong = element || null;
     document.dispatchEvent(new CustomEvent('archive-track-selected', { detail: { trackTitle, artist, num } }));
   }
 
